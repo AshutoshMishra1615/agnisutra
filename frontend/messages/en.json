@@ -1,0 +1,74 @@
+{
+  "name": "AgniSutra",
+  "register": {
+    "title": "Create Account",
+    "name": "Name",
+    "email": "Email",
+    "invalidEmail": "Enter a valid Email Address",
+    "password": "Password",
+    "terms": "You agree to our friendly privacy policy",
+    "signup": "Sign Up",
+    "ask": "Already an User?",
+    "redirect": "Sign In",
+    "benefits": {
+      "diary": "Maintain a digital farm diary",
+      "moisture": "Monitor soil moisture levels",
+      "timeline": "Track your crop's timeline",
+      "advisor": "AI advisor for farming guidance",
+      "health": "Real-time crop health insights"
+    }
+  },
+  "login" : {
+    "title":"Enter Account",
+    "email" : "email",
+    "pass" : "Password",
+    "login" : "Log In"
+  },
+  "dashboard": {
+    "title": "Hello",
+    "actions": {
+      "ai": "AI Assistant",
+      "my": "My Fields",
+      "add": "Add fields",
+      "soil": "Soil Reports"
+    },
+    "crop": "Crop Health",
+    "back": "Back to All Crops",
+    "cropcard": {
+      "growth": "Growth Chart",
+      "soil": "Soil Moisture",
+      "needed": "Needed",
+      "temp": "Avg Temperature",
+      "dates": {
+        "sown": "Sown Date",
+        "irrigate": "Last Irrigation",
+        "pest": "Last Pesticide",
+        "expect": "Expected Yields"
+      }
+    },
+    "details":{
+      "health":{
+        "crop":"Crop Health",
+        "soil":"Soil Health",
+        "irrigate":"Irrigation Health",
+        "analyse":"Analysis Scale"
+      },
+      "rating":{
+        "good":"Good",
+        "medium":"Medium",
+        "bad":"Bad"
+      },
+      "management":{
+        "irrigate":"Irrigation Management",
+        "pest":"Pesticide Management",
+        "add" : "ADD",
+        "params":{
+          "date" : "Date",
+          "Rainfall" : "Rainfall (mm)",
+          "evaporation" : "Evaporation",
+          "quantity" : "Quantity"
+        }
+      }
+    }
+  }
+}
