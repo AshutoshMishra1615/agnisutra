@@ -13,7 +13,7 @@ export default function LogOut() {
     try {
       await axios.post("/auth/logout", {}, {
         headers: {
-          Authorization: `Bearer ${user?.access_Token}`,
+          Authorization: `Bearer ${user?.access_token}`,
         },
       });
       clearUser(); // Clear user state in context
