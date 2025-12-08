@@ -1,23 +1,43 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
 import { useTranslations } from "next-intl";
+import axios from "axios";
+import { toast } from 'sonner'
+import { useRouter } from "next/navigation";
+
+type FormValues = {
+  name: String,
+  email: String,
+  password: String
+}
 
 export default function RegisterCard() {
   const {
     register,
-    formState: { errors },
     handleSubmit,
-  } = useForm();
+  } = useForm<FormValues>();
+
+  const router = useRouter();
 
   const t = useTranslations();
 
-  console.log("t",t('register.name'))
-
-  const onSubmit = () => {
-    console.log("Submitted successfully");
-  };
-  
+  const onSubmit: SubmitHandler<FormValues> = async(data) => {
+    try {
+      const response = await axios.post('/auth/register',data);
+      if(response.status === 200){
+        //give a success message
+        toast('Registration Successfull')
+        //redirect to the dashboard
+        router.push('/login')
+      }
+    } catch (error) {
+      toast('Registration Unsuccessful')
+      console.log(error)
+    }
+  }
+  const onError: SubmitErrorHandler<FormValues> = (errors) =>
+    console.log(errors)
 
   return (
     <div className="max-w-sm lg:max-w-lg px-7 py-7 rounded-[9.8px] border-[0.57px] border-white backdrop-blur-[6.79px] lg:rounded-[20px] lg:px-12 lg:py-12">
@@ -26,7 +46,7 @@ export default function RegisterCard() {
           {t('register.title')}
         </p>
         <form
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={handleSubmit(onSubmit, onError)}
           className="flex flex-col justify-start"
         >
           <label htmlFor="name" className="font-[600px] ">
@@ -44,9 +64,12 @@ export default function RegisterCard() {
             {t('register.email')}
           </label>
           <input
-            type="text"
+            type="email"
             id="email"
-            {...register("email", { required: true })}
+            {...register("email", { required: true, pattern: {
+    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    message: t('register.invalidEmail')
+  } })}
             placeholder={t('register.email')}
             className="w-full bg-white border-[0.5px] border-[#D0D5DD] rounded-sm shadow-[0_0.5_0.9_rgba(16,24,40,0.05) text-black px-3 py-1 text-sm my-3 "
           />

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Bell, User } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import LogOut from './LogOut';
 
 interface HeaderProps {
   userName?: string;
@@ -31,6 +32,7 @@ export default function Header({ userName, showIcons = true }: HeaderProps) {
               <User size={24} />
             </button>
             <LanguageSwitcher/>
+            <LogOut/>
           </div>
         )}
       </div>

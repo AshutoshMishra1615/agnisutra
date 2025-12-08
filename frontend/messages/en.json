@@ -4,6 +4,7 @@
     "title": "Create Account",
     "name": "Name",
     "email": "Email",
+    "invalidEmail": "Enter a valid Email Address",
     "password": "Password",
     "terms": "You agree to our friendly privacy policy",
     "signup": "Sign Up",
@@ -16,6 +17,12 @@
       "advisor": "AI advisor for farming guidance",
       "health": "Real-time crop health insights"
     }
+  },
+  "login" : {
+    "title":"Enter Account",
+    "email" : "email",
+    "pass" : "Password",
+    "login" : "Log In"
   },
   "dashboard": {
     "title": "Hello",
