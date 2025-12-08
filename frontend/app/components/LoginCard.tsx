@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import axios from "axios";
 import { toast } from 'sonner'
 import { useRouter } from "next/navigation";
+import { useAuth } from "../hooks/useAuth";
 
 type FormValues = {
   username: String,
@@ -21,9 +22,10 @@ export default function LoginCard() {
 
    const router = useRouter();
 
+   const { setUser } = useAuth();
+
    const onSubmit: SubmitHandler<FormValues> = async(data) => {
 
-    console.log(data)
     try {
       const response = await axios.post('/auth/login',data,{
        headers: {
@@ -31,15 +33,17 @@ export default function LoginCard() {
        }
       });
       if(response.status === 200){
-        toast('Login Successfull')
-        router.push('/dashboard')
+        const { access_Token } = response.data;
+        const email = data.username
+        setUser({ access_Token, email }); // Update user state in context
+        axios.defaults.headers.common["Authorization"] = `Bearer ${access_Token}`; // Set default Authorization header
+        toast.success("Login Successful");
+        router.push("/dashboard"); // Redirect to dashboard
       }
 
-      console.log(response)
-
     } catch (error) {
-      toast('Login Unsuccessful')
-      console.log(error)
+      toast.error("Login Unsuccessful");
+      console.error("Login failed:", error);
     }
   }
   const onError: SubmitErrorHandler<FormValues> = (errors) =>

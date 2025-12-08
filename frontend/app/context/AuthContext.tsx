@@ -1,43 +1,37 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { createContext, useState, ReactNode } from "react";
 
 type User = {
-  accessToken: string;
-  name: string;
-  email: string;
+  access_Token: string;
+  email: String;
 };
 
 type AuthContextType = {
   user: User | null;
-  login: (userData: User) => void;
-  logout: () => void;
+  setUser: (userData: User) => void;
+  clearUser: () => void;
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const router = useRouter();
+  const [user, setUserState] = useState<User | null>(null);
 
-  const login = (userData: User) => {
-    setUser(userData);
-    // Optionally, save user data to localStorage/sessionStorage
-    localStorage.setItem("user", JSON.stringify(userData));
-    router.push("/dashboard"); // Redirect after login
+  const setUser = (userData: User) => {
+       console.log(userData)
+    setUserState(userData);
+    localStorage.setItem("user", JSON.stringify(userData)); // Save user data in localStorage
   };
 
-  const logout = () => {
-    setUser(null);
+  const clearUser = () => {
+    setUserState(null);
     localStorage.removeItem("user");
-    router.push("/login"); // Redirect after logout
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, setUser, clearUser }}>
       {children}
     </AuthContext.Provider>
   );
 };
-

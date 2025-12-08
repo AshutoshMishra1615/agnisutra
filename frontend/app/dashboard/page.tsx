@@ -8,6 +8,7 @@ import WeatherContainer from '../components/WeatherContainer';
 import { mockCrops, mockWeather } from '../lib/mockData';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import AddField from '../components/AddField';
 
 export default function DashboardPage() {
   const [expandedCropId, setExpandedCropId] = useState<string | null>(null);
@@ -45,13 +46,7 @@ export default function DashboardPage() {
             <span>🌾</span>
             <span>{t('actions.my')}</span>
           </Link>
-          <Link
-            href="/add-fields"
-            className="rounded-[7px] border-[0.56px] flex justify-center items-center bg-[#879d7b] border-white py-4"
-          >
-            <span>📍</span>
-            <span>{t('actions.add')}</span>
-          </Link>
+          <AddField/>
           <Link
             href="/soil-reports"
             className="rounded-[7px] border-[0.56px] flex justify-center items-center bg-[#879d7b] border-white py-4"
