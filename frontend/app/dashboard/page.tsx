@@ -8,12 +8,24 @@ import WeatherContainer from '../components/WeatherContainer';
 import { mockCrops, mockWeather } from '../lib/mockData';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import AddField from '../components/AddField';
+import Map from '../components/Map';
 
 export default function DashboardPage() {
   const [expandedCropId, setExpandedCropId] = useState<string | null>(null);
 
   const expandedCrop = mockCrops.find(crop => crop.id === expandedCropId);
+
+  const [showMap, setShowMap] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
+
+  const handleAddFieldClick = () => {
+    setShowMap(true); // Show the map when the button is clicked
+  };
+
+  const handleLocationSelect = (lat: number, lng: number) => {
+    setSelectedLocation({ lat, lng });
+    setShowMap(false); // Hide the map after selecting a location
+  };
 
   const t = useTranslations('dashboard');
 
@@ -46,7 +58,12 @@ export default function DashboardPage() {
             <span>🌾</span>
             <span>{t('actions.my')}</span>
           </Link>
-          <AddField/>
+          <div className="rounded-[7px] border-[0.56px] flex flex-col items-center bg-[#879d7b] border-white py-4">
+            <span>📋</span>
+            <span>
+              <button onClick={handleAddFieldClick}>
+               {t('actions.add')} </button></span>
+          </div>
           <Link
             href="/soil-reports"
             className="rounded-[7px] border-[0.56px] flex justify-center items-center bg-[#879d7b] border-white py-4"
@@ -62,6 +79,23 @@ export default function DashboardPage() {
             <span>{t('actions.ai')}</span>
           </Link>
         </div>
+
+        {/* Map Section */}
+        {showMap && (
+          <div className="mt-4">
+            <Map onLocationSelect={handleLocationSelect} />
+          </div>
+        )}
+
+        {/* Display Selected Field Coordinates */}
+        {selectedLocation && (
+          <div className="mt-4 p-4 bg-gray-900 text-white rounded-md">
+            <h2 className="font-semibold">Selected Field Coordinates</h2>
+            <p>
+              Latitude: {selectedLocation.lat.toFixed(6)}, Longitude: {selectedLocation.lng.toFixed(6)}
+            </p>
+          </div>
+        )}
 
         {/* Weather Widget */}
         <WeatherContainer/>

@@ -33,10 +33,11 @@ export default function LoginCard() {
        }
       });
       if(response.status === 200){
-        const { access_Token } = response.data;
+        console.log(response)
+        const { access_token } = response.data;
         const email = data.username
-        setUser({ access_Token, email }); // Update user state in context
-        axios.defaults.headers.common["Authorization"] = `Bearer ${access_Token}`; // Set default Authorization header
+        setUser({ access_token, email }); // Update user state in context
+        axios.defaults.headers.common["Authorization"] = `Bearer ${access_token}`; // Set default Authorization header
         toast.success("Login Successful");
         router.push("/dashboard"); // Redirect to dashboard
       }

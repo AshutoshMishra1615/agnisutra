@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
 root {
   --base-color : #132a13;
@@ -35,3 +36,59 @@ body {
   font-style: normal;
 }
 
+/* --- CONTROL GROUP WRAPPER --- */
+.leaflet-control {
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+  overflow: hidden;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+}
+
+/* --- EACH TOOL BUTTON --- */
+.leaflet-control a {
+  width: 36px;                /* consistent square */
+  height: 36px;
+
+  display: flex;              /* proper centering */
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  margin: 0;
+
+  background: rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+/* Remove last border */
+.leaflet-control a:last-child {
+  border-bottom: none;
+}
+
+/* --- SMOOTH HOVER --- */
+.leaflet-control a:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* --- CLICK FEEDBACK --- */
+.leaflet-control a:active {
+  transform: scale(0.92);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* --- FIX ICON ALIGNMENT: Leaflet-draw uses pseudo-elements --- */
+.leaflet-draw-toolbar a::before {
+  display: block;
+  margin: auto;               /* perfectly center icons */
+  background-size: 70% 70% !important;
+}
+
+/* Optional: make icons white for dark background */
+.leaflet-draw-toolbar a::before {
+  filter: brightness(200%);
+}

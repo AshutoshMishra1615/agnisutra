@@ -3,7 +3,7 @@
 import { createContext, useState, ReactNode } from "react";
 
 type User = {
-  access_Token: string;
+  access_token: string;
   email: String;
 };
 
