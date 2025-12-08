@@ -1,8 +1,8 @@
-'use client';
+
 
 import { CropData } from '../types/crop';
 import GrowthChart from './GrowthChart';
-
+import { useTranslations } from 'next-intl';
 interface CropCardProps {
   crop: CropData;
   isExpanded: boolean;
@@ -15,6 +15,8 @@ export default function CropCard({ crop, isExpanded, onToggle }: CropCardProps) 
     warning: 'bg-yellow-500',
     bad: 'bg-red-500'
   };
+
+  const t = useTranslations();
 
   return (
     <div className="bg-[#495643] rounded-xl py-2 px-3 relative">
@@ -39,7 +41,7 @@ export default function CropCard({ crop, isExpanded, onToggle }: CropCardProps) 
                   <div>
                     <div className="flex justify-center items-center">
                       <h4 className="text-white font-bold  text-lg mb-3">
-                        Growth chart
+                        {t('dashboard.cropcard.growth')}
                       </h4>
                     </div>
                   </div>
@@ -51,41 +53,41 @@ export default function CropCard({ crop, isExpanded, onToggle }: CropCardProps) 
       {/* Soil Moisture */}
       <div className="mb-3">
         <div className="flex items-baseline space-x-2">
-          <span className="text-white text-lg">Soil moisture : {crop.soilMoisture}%</span>
+          <span className="text-white text-lg">{t('dashboard.cropcard.soil')} : {crop.soilMoisture}%</span>
         </div>
-        <span className="text-white text-sm">Needed : {crop.soilMoistureNeeded}%</span>
+        <span className="text-white text-sm">{t('dashboard.cropcard.needed')} : {crop.soilMoistureNeeded}%</span>
       </div>
 
       {/* Temperature */}
       <div className="mb-6">
         <div className="flex items-baseline space-x-2">
-          <span className="text-white text-lg">Avg Temperature : {crop.avgTemperature}°C</span>
+          <span className="text-white text-lg">{t('dashboard.cropcard.temp')} : {crop.avgTemperature}°C</span>
         </div>
-        <span className="text-white text-sm">Needed : {crop.temperatureNeeded}</span>
+        <span className="text-white text-sm">{t('dashboard.cropcard.needed')} : {crop.temperatureNeeded}</span>
       </div>
 
       {/* Date Information */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <span className="text-white">Sown Date</span>
+          <span className="text-white">{t('dashboard.cropcard.dates.sown')}</span>
           <span className="bg-white text-gray-900 px-4 py-1 rounded-[3px]text-sm font-medium">
             {crop.sownDate}
           </span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-white">Last Irrigation</span>
+          <span className="text-white">{t('dashboard.cropcard.dates.irrigate')}</span>
           <span className="bg-white text-gray-900 px-4 py-1 rounded-[3px]text-sm font-medium">
             {crop.lastIrrigation}
           </span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-white">Last Pesticide</span>
+          <span className="text-white">{t('dashboard.cropcard.dates.pest')}</span>
           <span className="bg-white text-gray-900 px-4 py-1 rounded-[3px]text-sm font-medium">
             {crop.lastPesticide}
           </span>
         </div>
         <div className="flex items-center justify-between">
-              <span className="text-white">Expected Yield</span>
+              <span className="text-white">{t('dashboard.cropcard.dates.expect')}</span>
               <span className="bg-white text-gray-900 px-4 py-1 rounded-[3px] text-sm font-medium">
                 {crop.expectedYield}
               </span>

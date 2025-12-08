@@ -7,11 +7,14 @@ import CropDetailView from '../components/CropDetailView';
 import WeatherWidget from '../components/WeatherWidget';
 import { mockCrops, mockWeather } from '../lib/mockData';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 export default function DashboardPage() {
   const [expandedCropId, setExpandedCropId] = useState<string | null>(null);
 
   const expandedCrop = mockCrops.find(crop => crop.id === expandedCropId);
+
+  const t = useTranslations();
 
   return (
     <div className="min-h-screen bg-[#0E1A0E]">

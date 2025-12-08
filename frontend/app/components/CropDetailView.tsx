@@ -2,6 +2,7 @@
 
 import { CropData } from "../types/crop";
 import GrowthChart from "./GrowthChart";
+import { useTranslations } from 'next-intl';
 import Image from "next/image";
 
 interface CropDetailViewProps {
@@ -14,6 +15,8 @@ export default function CropDetailView({ crop }: CropDetailViewProps) {
     warning: "bg-yellow-500",
     bad: "bg-red-500",
   };
+
+ const t = useTranslations();
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -33,7 +36,7 @@ export default function CropDetailView({ crop }: CropDetailViewProps) {
             <div>
               <div className="flex justify-center items-center">
                 <h4 className="text-white font-bold  text-lg mb-3">
-                  Growth chart
+                 {t('dashboard.cropcard.growth')}
                 </h4>
               </div>
             </div>
@@ -45,46 +48,46 @@ export default function CropDetailView({ crop }: CropDetailViewProps) {
           <div className="mb-3">
             <div className="flex items-baseline space-x-2">
               <span className="text-white text-lg">
-                Soil moisture : {crop.soilMoisture}%
+                {t('dashboard.cropcard.soil')} : {crop.soilMoisture}%
               </span>
             </div>
             <span className="text-white text-sm">
-              Needed : {crop.soilMoistureNeeded}%
+              {t('dashboard.cropcard.needed')} : {crop.soilMoistureNeeded}%
             </span>
           </div>
 
           <div className="mb-6">
             <div className="flex items-baseline space-x-2">
               <span className="text-white text-lg">
-                Avg Temperature : {crop.avgTemperature}°C
+                {t('dashboard.cropcard.temp')} : {crop.avgTemperature}°C
               </span>
             </div>
             <span className="text-white text-sm">
-              Needed : {crop.temperatureNeeded}
+              {t('dashboard.cropcard.needed')} : {crop.temperatureNeeded}
             </span>
           </div>
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-white">Sown Date</span>
+              <span className="text-white">{t('dashboard.cropcard.dates.sown')}</span>
               <span className="bg-white text-gray-900 px-4 py-1 rounded-[3px] text-sm font-medium">
                 {crop.sownDate}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-white">Last Irrigation</span>
+              <span className="text-white">{t('dashboard.cropcard.dates.irrigate')}</span>
               <span className="bg-white text-gray-900 px-4 py-1 rounded-[3px] text-sm font-medium">
                 {crop.lastIrrigation}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-white">Last Pesticide</span>
+              <span className="text-white">{t('dashboard.cropcard.dates.pest')}</span>
               <span className="bg-white text-gray-900 px-4 py-1 rounded-[3px]text-sm font-medium">
                 {crop.lastPesticide}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-white">Expected Yield</span>
+              <span className="text-white">{t('dashboard.cropcard.dates.expect')}</span>
               <span className="bg-white text-gray-900 px-4 py-1 rounded-[3px] text-sm font-medium">
                 {crop.expectedYield}
               </span>
@@ -100,7 +103,7 @@ export default function CropDetailView({ crop }: CropDetailViewProps) {
           <div className="flex flex-col gap-4">
             <div>
               <h3 className="inline bg-[#1f2e1e] text-white px-4 py-2 rounded-lg font-medium">
-                Crop Health
+                {t('dashboard.details.health.crop')}
               </h3>
             </div>
             <div className="bg-gray-300 rounded-b-xl h-48"></div>
@@ -108,7 +111,7 @@ export default function CropDetailView({ crop }: CropDetailViewProps) {
           <div className="flex flex-col gap-4">
             <div>
               <h3 className="inline bg-[#1f2e1e] text-white px-4 py-2 rounded-lg font-medium">
-                Soil Health
+                {t('dashboard.details.health.soil')}
               </h3>
             </div>
 
@@ -117,14 +120,14 @@ export default function CropDetailView({ crop }: CropDetailViewProps) {
           <div className="flex flex-col gap-4">
             <div>
               <h3 className="inline bg-[#1f2e1e] text-white px-4 py-2 rounded-lg font-medium">
-                Irrigation Health
+                {t('dashboard.details.health.irrigate')}
               </h3>
             </div>
 
             <div className="bg-gray-300 rounded-b-xl h-48"></div>
           </div>
           <div className="bg-teal-700 rounded-xl p-4 relative">
-            <h3 className="text-white font-semibold mb-2">Analysis Scale</h3>
+            <h3 className="text-white font-semibold mb-2">{t('dashboard.details.health.analyse')}</h3>
             <p className="text-white text-xs mb-4">
               NDVI (For Rice - use for early stage growth)
             </p>
@@ -133,19 +136,19 @@ export default function CropDetailView({ crop }: CropDetailViewProps) {
                 <div className="w-12 h-12 bg-green-400 rounded-full flex items-center justify-center mb-1">
                   ✓
                 </div>
-                <span className="text-white text-xs">Good</span>
+                <span className="text-white text-xs">{t('dashboard.details.rating.good')}</span>
               </div>
               <div className="text-center">
                 <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mb-1">
                   ⚠
                 </div>
-                <span className="text-white text-xs">Medium</span>
+                <span className="text-white text-xs">{t('dashboard.details.rating.medium')}</span>
               </div>
               <div className="text-center">
                 <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center mb-1">
                   ✗
                 </div>
-                <span className="text-white text-xs">Bad</span>
+                <span className="text-white text-xs">{t('dashboard.details.rating.bad')}</span>
               </div>
             </div>
             <div className="h-12 rounded-lg overflow-hidden flex">
@@ -171,18 +174,18 @@ export default function CropDetailView({ crop }: CropDetailViewProps) {
         <div className="rounded-xl p-4">
           <div className=" flex items-center justify-between mb-4 gap-4">
             <div className="flex-1 bg-[#1f2e1e] px-2 py-2 rounded-md">
-              <h3 className="text-white font-semibold">Irrigation Management</h3>
+              <h3 className="text-white font-semibold">{t('dashboard.details.management.irrigate')}</h3>
             </div>
             
             <button className="border border-white text-white px-4 py-2 rounded-md text-sm bg-[#1f2e1e] hover:bg-white hover:text-gray-900 transition-colors">
-              ADD +
+              {t('dashboard.details.management.add')} +
             </button>
           </div>
           <div className="grid grid-cols-4 gap-4 text-white font-bold text-sm">
-            <div>Date</div>
-            <div>Quantity</div>
-            <div>Evaporation</div>
-            <div>Rainfall (mm)</div>
+            <div>{t('dashboard.details.management.params.date')}</div>
+            <div>{t('dashboard.details.management.params.quantity')}</div>
+            <div>{t('dashboard.details.management.params.evaporation')}</div>
+            <div>{t('dashboard.details.management.params.Rainfall')}</div>
           </div>
         </div>
 
@@ -190,17 +193,17 @@ export default function CropDetailView({ crop }: CropDetailViewProps) {
         <div className="rounded-xl p-4">
           <div className=" flex items-center justify-between mb-4 gap-4">
             <div className="flex-1 bg-[#1f2e1e] px-2 py-2 rounded-md">
-              <h3 className="text-white font-semibold">Pesticide Management</h3>
+              <h3 className="text-white font-semibold">{t('dashboard.details.management.pest')}</h3>
             </div>
             <button className="border border-white text-white px-4 py-2 rounded-md text-sm bg-[#1f2e1e] hover:bg-white hover:text-gray-900 transition-colors">
-              ADD +
+              {t('dashboard.details.management.add')} +
             </button>
           </div>
           <div className="grid grid-cols-4 gap-4 text-white font-bold text-sm">
-            <div>Date</div>
-            <div>Quantity</div>
-            <div>Evaporation</div>
-            <div>Rainfall (mm)</div>
+            <div>{t('dashboard.details.management.params.date')}</div>
+            <div>{t('dashboard.details.management.params.quantity')}</div>
+            <div>{t('dashboard.details.management.params.evaporation')}</div>
+            <div>{t('dashboard.details.management.params.Rainfall')}</div>
           </div>
         </div>
       </div>

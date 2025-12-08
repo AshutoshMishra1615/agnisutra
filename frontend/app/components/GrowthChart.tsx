@@ -1,3 +1,4 @@
+
 interface GrowthChartProps {
   percentage: number;
 }
