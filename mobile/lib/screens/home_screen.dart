@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'profile_screen.dart';
-import 'satellite_map_screen.dart';
+import 'your_fields_screen.dart';
+import 'alerts_screen.dart';
+import 'ai_assistant_screen.dart';
 import '../widgets/dashboard_widget.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -11,29 +14,70 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
-
-  final List<Widget> _widgetOptions = <Widget>[
-    const DashboardWidget(),
-    const SatelliteMapScreen(),
-    const ProfileScreen(),
-  ];
+  final int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const YourFieldsScreen()),
+      );
+    } else if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ProfileScreen()),
+      );
+    }
+  }
+
+  void _showLanguageDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E1E),
+        title: Text(
+          'select_language'.tr(),
+          style: const TextStyle(color: Colors.white),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: Text(
+                'english'.tr(),
+                style: const TextStyle(color: Colors.white),
+              ),
+              onTap: () {
+                context.setLocale(const Locale('en', 'US'));
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Text(
+                'hindi'.tr(),
+                style: const TextStyle(color: Colors.white),
+              ),
+              onTap: () {
+                context.setLocale(const Locale('hi', 'IN'));
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF0D0D0D),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0D0D0D), // Match dashboard background
         elevation: 0,
         title: Row(
           children: [
-            Image.asset('assets/images/logo.png', height: 32, width: 32),
+            Image.asset('assets/images/logo.png', height: 48, width: 48),
             const SizedBox(width: 8),
             const Text(
               'AgniSutra',
@@ -47,19 +91,24 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 16.0),
+            padding: const EdgeInsets.only(right: 8.0),
             child: ElevatedButton.icon(
               onPressed: () {
-                // Navigate to AI Assistant
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AiAssistantScreen(),
+                  ),
+                );
               },
               icon: const Icon(
                 Icons.auto_awesome,
                 size: 16,
                 color: Colors.black,
               ),
-              label: const Text(
-                'AI Assistant',
-                style: TextStyle(
+              label: Text(
+                'ai_assistant'.tr(),
+                style: const TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
                 ),
@@ -76,9 +125,40 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.menu, color: Colors.white, size: 28),
+            color: const Color(0xFF1E1E1E),
+            onSelected: (value) {
+              if (value == 'alerts') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AlertsScreen()),
+                );
+              } else if (value == 'language') {
+                _showLanguageDialog();
+              }
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              PopupMenuItem<String>(
+                value: 'alerts',
+                child: Text(
+                  'alerts'.tr(),
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+              PopupMenuItem<String>(
+                value: 'language',
+                child: Text(
+                  'select_language'.tr(),
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 6),
         ],
       ),
-      body: IndexedStack(index: _selectedIndex, children: _widgetOptions),
+      body: const DashboardWidget(),
       bottomNavigationBar: NavigationBarTheme(
         data: NavigationBarThemeData(
           indicatorColor: const Color(0xFF3E4D3C),
@@ -96,21 +176,21 @@ class _HomeScreenState extends State<HomeScreen> {
           backgroundColor: const Color(0xFF1E1E1E),
           selectedIndex: _selectedIndex,
           onDestinationSelected: _onItemTapped,
-          destinations: const [
+          destinations: [
             NavigationDestination(
-              icon: Icon(Icons.spa_outlined),
-              selectedIcon: Icon(Icons.spa),
-              label: 'Crops',
+              icon: const Icon(Icons.spa_outlined),
+              selectedIcon: const Icon(Icons.spa),
+              label: 'crops'.tr(),
             ),
             NavigationDestination(
-              icon: Icon(Icons.map_outlined),
-              selectedIcon: Icon(Icons.map),
-              label: 'Land',
+              icon: const Icon(Icons.map_outlined),
+              selectedIcon: const Icon(Icons.map),
+              label: 'land'.tr(),
             ),
             NavigationDestination(
-              icon: Icon(Icons.person_outline),
-              selectedIcon: Icon(Icons.person),
-              label: 'Profile',
+              icon: const Icon(Icons.person_outline),
+              selectedIcon: const Icon(Icons.person),
+              label: 'profile'.tr(),
             ),
           ],
         ),
