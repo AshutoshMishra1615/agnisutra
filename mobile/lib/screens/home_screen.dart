@@ -185,7 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
             NavigationDestination(
               icon: const Icon(Icons.map_outlined),
               selectedIcon: const Icon(Icons.map),
-              label: 'land'.tr(),
+              label: 'fields'.tr(),
             ),
             NavigationDestination(
               icon: const Icon(Icons.person_outline),
