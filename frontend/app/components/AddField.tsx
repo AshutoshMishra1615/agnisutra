@@ -2,13 +2,15 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
-import { Plus, MapPin, X } from "lucide-react";
+import { Plus, MapPin, X, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { fieldService } from "../services/fieldService";
+import { toast } from "react-hot-toast";
 
-const Map = dynamic(() => import("../components/Map"), {
+const LocationPicker = dynamic(() => import("../components/LocationPicker"), {
   ssr: false,
   loading: () => (
-    <div className="h-[400px] w-full bg-[#1a2e1a] animate-pulse rounded-lg flex items-center justify-center text-gray-500">
+    <div className="h-[300px] w-full bg-[#1a2e1a] animate-pulse rounded-lg flex items-center justify-center text-gray-500">
       Loading Map...
     </div>
   ),
@@ -16,14 +18,48 @@ const Map = dynamic(() => import("../components/Map"), {
 
 export default function AddField() {
   const [showModal, setShowModal] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState<{
-    lat: number;
-    lng: number;
-  } | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const t = useTranslations("dashboard.actions");
 
-  const handleLocationSelect = (lat: number, lng: number) => {
-    setSelectedLocation({ lat, lng });
+  const [formData, setFormData] = useState({
+    name: "",
+    crop: "",
+    area_acres: "",
+    lat: "",
+    lon: "",
+  });
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    try {
+      await fieldService.createField({
+        name: formData.name,
+        crop: formData.crop,
+        area_acres: parseFloat(formData.area_acres),
+        lat: parseFloat(formData.lat),
+        lon: parseFloat(formData.lon),
+      });
+
+      toast.success("Field added successfully!");
+      setShowModal(false);
+      setFormData({ name: "", crop: "", area_acres: "", lat: "", lon: "" });
+      // Ideally we should refresh the dashboard or field list here
+      // For now, just close the modal
+    } catch (error) {
+      console.error("Failed to create field:", error);
+      toast.error("Failed to add field");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -42,53 +78,126 @@ export default function AddField() {
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#0E1A0E] border border-[#879d7b]/30 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl animate-in fade-in zoom-in duration-300">
-            <div className="p-4 border-b border-[#879d7b]/20 flex items-center justify-between bg-[#1a2e1a]/50">
-              <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                <MapPin className="text-[#4ade80]" />
-                Add New Field
-              </h3>
-              <button
-                onClick={() => setShowModal(false)}
-                className="p-2 hover:bg-white/10 rounded-full transition-colors"
-              >
-                <X className="text-gray-400 hover:text-white" />
-              </button>
-            </div>
+          <div className="bg-[#0E1A0E] border border-[#879d7b]/30 rounded-2xl w-full max-w-md p-6 relative max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+            >
+              <X size={24} />
+            </button>
 
-            <div className="p-6 overflow-y-auto flex-1">
-              <div className="mb-6">
-                <p className="text-gray-400 mb-4">
-                  Click on the map to select your field location.
-                </p>
-                <div className="rounded-xl overflow-hidden border border-[#879d7b]/30 h-[400px]">
-                  <Map onLocationSelect={handleLocationSelect} />
-                </div>
+            <h2 className="text-2xl font-bold text-white mb-6">
+              Add New Field
+            </h2>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-1">
+                  Field Name
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#4ade80]"
+                  placeholder="e.g. North Plot"
+                />
               </div>
 
-              {selectedLocation && (
-                <div className="bg-[#4ade80]/10 border border-[#4ade80]/30 rounded-xl p-4 flex items-center justify-between animate-in slide-in-from-bottom-2">
-                  <div>
-                    <p className="text-[#4ade80] font-bold text-sm uppercase tracking-wider">
-                      Selected Location
-                    </p>
-                    <p className="text-white font-mono text-sm mt-1">
-                      {selectedLocation.lat.toFixed(6)},{" "}
-                      {selectedLocation.lng.toFixed(6)}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => {
-                      // Save logic would go here
-                      setShowModal(false);
-                    }}
-                    className="bg-[#4ade80] text-[#050b05] px-6 py-2 rounded-lg font-bold hover:bg-[#22c55e] transition-colors shadow-[0_0_15px_rgba(74,222,128,0.3)]"
-                  >
-                    Confirm Location
-                  </button>
-                </div>
-              )}
-            </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-1">
+                  Crop Type
+                </label>
+                <select
+                  name="crop"
+                  value={formData.crop}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#4ade80]"
+                >
+                  <option value="" className="bg-[#0a120a]">
+                    Select Crop
+                  </option>
+                  <option value="Soybean" className="bg-[#0a120a]">
+                    Soybean
+                  </option>
+                  <option value="Wheat" className="bg-[#0a120a]">
+                    Wheat
+                  </option>
+                  <option value="Rice" className="bg-[#0a120a]">
+                    Rice
+                  </option>
+                  <option value="Corn" className="bg-[#0a120a]">
+                    Corn
+                  </option>
+                  <option value="Cotton" className="bg-[#0a120a]">
+                    Cotton
+                  </option>
+                  <option value="Sugarcane" className="bg-[#0a120a]">
+                    Sugarcane
+                  </option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-1">
+                  Expected Yield (t/ha)
+                </label>
+                <input
+                  type="number"
+                  name="area_acres"
+                  value={formData.area_acres}
+                  onChange={handleInputChange}
+                  required
+                  step="0.1"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#4ade80]"
+                  placeholder="e.g. 2.5"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-400">
+                  Field Location (Click on map)
+                </label>
+                <LocationPicker
+                  onLocationSelect={(lat, lon) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      lat: lat.toString(),
+                      lon: lon.toString(),
+                    }));
+                  }}
+                />
+                {formData.lat && formData.lon && (
+                  <p className="text-xs text-[#4ade80]">
+                    Selected: {parseFloat(formData.lat).toFixed(4)},{" "}
+                    {parseFloat(formData.lon).toFixed(4)}
+                  </p>
+                )}
+                <input type="hidden" name="lat" value={formData.lat} required />
+                <input type="hidden" name="lon" value={formData.lon} required />
+              </div>
+
+              <button
+                type="submit"
+                disabled={submitting || !formData.lat || !formData.lon}
+                className="w-full py-3 mt-4 bg-[#4ade80] text-[#050b05] rounded-lg font-bold hover:bg-[#4ade80]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {submitting ? (
+                  <>
+                    <Loader2 className="animate-spin" size={20} />
+                    Adding...
+                  </>
+                ) : (
+                  <>
+                    <Plus size={20} />
+                    Add Field
+                  </>
+                )}
+              </button>
+            </form>
           </div>
         </div>
       )}

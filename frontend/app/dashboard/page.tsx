@@ -23,9 +23,28 @@ export default function DashboardPage() {
   const { user } = useAuth();
   const t = useTranslations("dashboard");
 
-  // Default location for demo (e.g., a farm in India)
-  const demoLat = 22.5726;
-  const demoLon = 88.3639;
+  // Location State (Default: Kolkata, India)
+  const [location, setLocation] = useState<{ lat: number; lon: number }>({
+    lat: 22.5726,
+    lon: 88.3639,
+  });
+
+  useEffect(() => {
+    // Try to get user's real location
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation({
+            lat: position.coords.latitude,
+            lon: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.warn("Geolocation failed, using default:", error);
+        }
+      );
+    }
+  }, []);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -109,7 +128,7 @@ export default function DashboardPage() {
 
           {/* Satellite View */}
           <div className="lg:col-span-2 h-full">
-            <NDVIWidget lat={demoLat} lon={demoLon} />
+            <NDVIWidget lat={location.lat} lon={location.lon} />
           </div>
         </div>
 

@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
 // Fallback to localhost if env var is missing during build/config load
-const BACKEND_URL = process.env.BACKEND_URL || "http://127.0.0.1:6969";
+const BACKEND_URL = process.env.BACKEND_URL || "http://127.0.0.1:8000";
 
 const nextConfig: NextConfig = {
   // @ts-expect-error - allowedDevOrigins is valid but types might be outdated

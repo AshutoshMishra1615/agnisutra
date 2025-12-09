@@ -161,17 +161,32 @@ export default function YieldPredictionWidget() {
             `/krishi-saathi/ndvi?lat=${location.lat}&lon=${location.lon}`
           );
           setNdvi({
-            value: ndviRes.data.ndvi_flowering || 0.5,
-            peak: ndviRes.data.ndvi_peak || 0.6,
-            slope: ndviRes.data.ndvi_veg_slope || 0.01,
+            value: ndviRes.data.ndvi_flowering || 0,
+            peak: ndviRes.data.ndvi_peak || 0,
+            slope: ndviRes.data.ndvi_veg_slope || 0,
           });
         } catch (e) {
           console.error("NDVI fetch failed", e);
-          // Fallback NDVI
+
+          // Deterministic fallback based on location (matching backend logic)
+          // This ensures the same location gets the same "random" values
+          let seed = Math.floor((location.lat + location.lon) * 1000);
+
+          // Simple seeded random generator (LCG)
+          const nextRandom = () => {
+            seed = (seed * 9301 + 49297) % 233280;
+            return seed / 233280;
+          };
+
+          const mockPeak = 0.6 + nextRandom() * (0.9 - 0.6);
+          const mockFlowering =
+            mockPeak * (0.85 + nextRandom() * (0.95 - 0.85));
+          const mockSlope = 0.005 + nextRandom() * (0.02 - 0.005);
+
           setNdvi({
-            value: 0.65 + Math.random() * 0.2,
-            peak: 0.75 + Math.random() * 0.15,
-            slope: 0.01 + Math.random() * 0.01,
+            value: mockFlowering,
+            peak: mockPeak,
+            slope: mockSlope,
           });
         }
 
@@ -181,21 +196,25 @@ export default function YieldPredictionWidget() {
           if (sensorRes.data) {
             if (sensorRes.data.moisture) {
               setSoilMoisture(sensorRes.data.moisture);
+              setValue("moisture", sensorRes.data.moisture);
             }
-            // Use sensor weather data if available (more accurate than API)
-            if (sensorRes.data.temperature && sensorRes.data.humidity) {
-              setWeather((prev) => ({
-                ...prev,
-                temp: sensorRes.data.temperature,
-                humidity: sensorRes.data.humidity,
-              }));
-              toast.info("Using live sensor data for weather");
-            }
+            if (sensorRes.data.nitrogen)
+              setValue("soil_N", sensorRes.data.nitrogen);
+            if (sensorRes.data.phosphorus)
+              setValue("soil_P", sensorRes.data.phosphorus);
+            if (sensorRes.data.potassium)
+              setValue("soil_K", sensorRes.data.potassium);
+
+            // Removed sensor weather override as per request
           }
-        } catch (e) {
+        } catch {
           // Likely 401 if not logged in, ignore
           console.log("Sensor data not available (likely not logged in)");
           setSoilMoisture(45); // Default reasonable value
+          // Set defaults for NPK if sensor fails
+          setValue("soil_N", 140);
+          setValue("soil_P", 40);
+          setValue("soil_K", 180);
         }
       } finally {
         setFetchingData(false);
@@ -203,7 +222,7 @@ export default function YieldPredictionWidget() {
     };
 
     fetchData();
-  }, [location]);
+  }, [location, setValue]);
 
   const onSubmit = async (data: YieldForm) => {
     setLoading(true);
@@ -252,9 +271,9 @@ export default function YieldPredictionWidget() {
       toast.success("Fertilizer Recommendation Calculated!");
     } catch (error: unknown) {
       console.error("Prediction error:", error);
-      // @ts-expect-error
+      // @ts-expect-error - Axios error type is not explicitly defined here
       if (error.response && error.response.status === 422) {
-        // @ts-expect-error
+        // @ts-expect-error - Axios error type is not explicitly defined here
         console.error("Validation Error Details:", error.response.data);
         toast.error("Invalid input data. Please check your entries.");
       } else {
@@ -360,9 +379,9 @@ export default function YieldPredictionWidget() {
           {/* Target Yield & Soil Inputs */}
           <div className="space-y-3">
             <label className="text-gray-300 text-xs font-bold uppercase tracking-wider block">
-              Soil & Target
+              Target Yield
             </label>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <div className="relative group">
                 <label className="text-[#4ade80] text-[10px] font-bold absolute -top-2 left-2 bg-[#132a13] px-1">
                   Target Yield (t/ha)
@@ -375,39 +394,19 @@ export default function YieldPredictionWidget() {
                   placeholder="2.5"
                 />
               </div>
-              <div className="relative group">
-                <label className="text-[#4ade80] text-[10px] font-bold absolute -top-2 left-2 bg-[#132a13] px-1">
-                  Soil Nitrogen (kg/ha)
-                </label>
-                <input
-                  type="number"
-                  {...register("soil_N", { required: true, min: 0 })}
-                  className="w-full bg-[#0E1A0E]/60 text-white border border-[#879d7b]/30 rounded-lg p-3 text-center focus:border-[#4ade80] outline-none transition-colors"
-                  placeholder="150"
-                />
-              </div>
-              <div className="relative group">
-                <label className="text-[#4ade80] text-[10px] font-bold absolute -top-2 left-2 bg-[#132a13] px-1">
-                  Soil Phosphorus (kg/ha)
-                </label>
-                <input
-                  type="number"
-                  {...register("soil_P", { required: true, min: 0 })}
-                  className="w-full bg-[#0E1A0E]/60 text-white border border-[#879d7b]/30 rounded-lg p-3 text-center focus:border-[#4ade80] outline-none transition-colors"
-                  placeholder="20"
-                />
-              </div>
-              <div className="relative group">
-                <label className="text-[#4ade80] text-[10px] font-bold absolute -top-2 left-2 bg-[#132a13] px-1">
-                  Soil Potassium (kg/ha)
-                </label>
-                <input
-                  type="number"
-                  {...register("soil_K", { required: true, min: 0 })}
-                  className="w-full bg-[#0E1A0E]/60 text-white border border-[#879d7b]/30 rounded-lg p-3 text-center focus:border-[#4ade80] outline-none transition-colors"
-                  placeholder="200"
-                />
-              </div>
+              {/* Hidden inputs for Soil NPK (fetched from sensor) */}
+              <input
+                type="hidden"
+                {...register("soil_N", { required: true })}
+              />
+              <input
+                type="hidden"
+                {...register("soil_P", { required: true })}
+              />
+              <input
+                type="hidden"
+                {...register("soil_K", { required: true })}
+              />
             </div>
           </div>
 

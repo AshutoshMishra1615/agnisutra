@@ -80,5 +80,12 @@
         }
       }
     }
+  },
+  "sensor": {
+    "title": "Live Field Sensors",
+    "online": "ONLINE",
+    "moisture": "Moisture",
+    "npk": "NPK",
+    "last_updated": "Last updated"
   }
 }

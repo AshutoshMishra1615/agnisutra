@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { useTranslations, useLocale } from "next-intl";
 
 type DiseaseResult = {
   predicted_class: string;
@@ -23,6 +24,8 @@ type DiseaseResult = {
 };
 
 export default function DiseaseDetectionWidget() {
+  const t = useTranslations("disease");
+  const locale = useLocale();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [result, setResult] = useState<DiseaseResult | null>(null);
@@ -43,6 +46,7 @@ export default function DiseaseDetectionWidget() {
     setLoading(true);
     const formData = new FormData();
     formData.append("file", selectedFile);
+    formData.append("language", locale); // Pass current language to backend
 
     try {
       const response = await api.post("/disease/predict", formData, {
@@ -51,10 +55,10 @@ export default function DiseaseDetectionWidget() {
         },
       });
       setResult(response.data);
-      toast.success("Disease Analysis Complete!");
+      toast.success(t("success"));
     } catch (error) {
       console.error("Disease detection error:", error);
-      toast.error("Failed to analyze image");
+      toast.error(t("error"));
     } finally {
       setLoading(false);
     }
@@ -65,12 +69,12 @@ export default function DiseaseDetectionWidget() {
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-xl font-bold text-white flex items-center gap-2">
           <ScanSearch className="text-[#4ade80]" size={24} />
-          Plant Disease Doctor
+          {t("title")}
         </h3>
         {result && (
           <span className="px-3 py-1 rounded-full bg-[#4ade80]/20 text-[#4ade80] text-xs font-bold flex items-center gap-1">
             <CheckCircle2 size={12} />
-            ANALYZED
+            {t("analyzed")}
           </span>
         )}
       </div>
@@ -118,10 +122,9 @@ export default function DiseaseDetectionWidget() {
               <div className="w-16 h-16 rounded-full bg-[#4ade80]/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                 <Upload className="text-[#4ade80]" size={32} />
               </div>
-              <p className="text-white font-medium mb-1">Upload Leaf Image</p>
+              <p className="text-white font-medium mb-1">{t("upload_title")}</p>
               <p className="text-gray-400 text-xs text-center max-w-[200px]">
-                Drag & drop or click to select a clear photo of the affected
-                leaf
+                {t("upload_desc")}
               </p>
               <input
                 type="file"
@@ -143,12 +146,12 @@ export default function DiseaseDetectionWidget() {
             {loading ? (
               <>
                 <Loader2 className="animate-spin" size={20} />
-                Analyzing Leaf...
+                {t("analyzing")}
               </>
             ) : (
               <>
                 <ScanSearch size={20} />
-                Diagnose Disease
+                {t("diagnose_btn")}
               </>
             )}
           </button>
@@ -157,40 +160,12 @@ export default function DiseaseDetectionWidget() {
         {/* Results Section */}
         {result && (
           <div className="animate-in fade-in slide-in-from-bottom-4 space-y-4">
-            <div className="bg-[#0E1A0E]/80 p-5 rounded-xl border border-[#879d7b]/30 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-[#4ade80]"></div>
-
-              <div className="flex justify-between items-start mb-2">
-                <div>
-                  <span className="text-xs text-gray-400 uppercase tracking-wider font-medium">
-                    Diagnosis
-                  </span>
-                  <h4 className="text-xl font-bold text-white mt-1">
-                    {result.predicted_class}
-                  </h4>
-                </div>
-                <div className="text-right">
-                  <span className="text-xs text-gray-400 uppercase tracking-wider font-medium">
-                    Confidence
-                  </span>
-                  <div className="text-[#4ade80] font-bold text-lg">
-                    {(result.confidence * 100).toFixed(1)}%
-                  </div>
-                </div>
-              </div>
-
-              <div className="w-full bg-gray-700/30 h-1.5 rounded-full mt-2 overflow-hidden">
-                <div
-                  className="h-full bg-[#4ade80] rounded-full transition-all duration-1000 ease-out"
-                  style={{ width: `${result.confidence * 100}%` }}
-                ></div>
-              </div>
-            </div>
+            {/* Removed Diagnosis Box as requested */}
 
             <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-xl">
               <h4 className="text-blue-400 font-bold text-sm mb-2 flex items-center gap-2">
                 <ShieldCheck size={16} />
-                Treatment & Prevention
+                {t("treatment_title")}
               </h4>
               <div className="text-sm text-blue-100/80 leading-relaxed markdown-content">
                 <ReactMarkdown
@@ -231,7 +206,7 @@ export default function DiseaseDetectionWidget() {
               className="w-full py-3 text-gray-400 hover:text-white text-sm hover:bg-white/5 rounded-lg transition-colors flex items-center justify-center gap-2"
             >
               <Upload size={14} />
-              Analyze Another Image
+              {t("analyze_another")}
             </button>
           </div>
         )}

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import LogOut from "./LogOut";
 import { useWebSocket } from "../hooks/useWebSocket";
+import { useState } from "react";
 
 interface HeaderProps {
   userName?: string;
@@ -19,9 +20,17 @@ export default function Header({
 }: HeaderProps) {
   const t = useTranslations();
 
-  // Connect to WebSocket for real-time alerts
-  // Using localhost:6969 as per backend configuration
-  useWebSocket("ws://localhost:6969/ws/alerts", userId);
+  // Dynamic WebSocket URL based on current host
+  const [wsUrl] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+      const host = window.location.hostname;
+      return `${protocol}://${host}:8000/ws/alerts`;
+    }
+    return "";
+  });
+
+  useWebSocket(wsUrl, userId);
 
   return (
     <header className="sticky top-0 z-50 glass-panel border-b border-[#879d7b]/20">
@@ -85,7 +94,7 @@ export default function Header({
                   </p>
                   <p className="text-xs text-gray-400">Pro Plan</p>
                 </div>
-                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#4ade80] to-[#22c55e] p-[1px]">
+                <div className="h-8 w-8 rounded-full bg-linear-to-br from-[#4ade80] to-[#22c55e] p-px">
                   <div className="h-full w-full rounded-full bg-[#050b05] flex items-center justify-center">
                     <User size={16} className="text-[#4ade80]" />
                   </div>

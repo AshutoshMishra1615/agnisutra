@@ -138,3 +138,20 @@ class KrishiChatInput(BaseModel):
 
 class KrishiChatOut(BaseModel):
     answer: str
+
+
+class FieldCreate(BaseModel):
+    name: str
+    crop: str
+    area_acres: float
+    lat: float
+    lon: float
+
+
+class FieldOut(FieldCreate):
+    id: int
+    user_id: int
+    created_at: datetime
+
+    class Config:
+        from_attributes = True

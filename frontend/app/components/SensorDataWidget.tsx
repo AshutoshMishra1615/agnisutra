@@ -2,14 +2,8 @@
 
 import { useEffect, useState } from "react";
 import api from "../services/api";
-import {
-  Loader2,
-  Thermometer,
-  Droplets,
-  Wind,
-  Activity,
-  Signal,
-} from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Loader2, Wind, Activity, Signal } from "lucide-react";
 
 type SensorData = {
   temperature: number;
@@ -22,6 +16,7 @@ type SensorData = {
 };
 
 export default function SensorDataWidget() {
+  const t = useTranslations("sensor");
   const [data, setData] = useState<SensorData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -68,52 +63,26 @@ export default function SensorDataWidget() {
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-xl font-bold text-white flex items-center gap-2">
           <Activity className="text-[#4ade80]" size={24} />
-          Live Field Sensors
+          {t("title")}
         </h3>
         <div className="flex items-center gap-2">
           <span className="relative flex h-3 w-3">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
           </span>
-          <span className="text-xs text-green-400 font-mono">ONLINE</span>
+          <span className="text-xs text-green-400 font-mono">
+            {t("online")}
+          </span>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4 flex-1">
-        {/* Temperature */}
-        <div className="bg-[#0E1A0E]/60 p-4 rounded-xl border border-[#879d7b]/10 hover:border-[#4ade80]/30 transition-colors group">
-          <div className="flex items-center gap-2 text-gray-400 mb-2 group-hover:text-[#4ade80] transition-colors">
-            <Thermometer size={18} />
-            <span className="text-xs uppercase tracking-wider font-medium">
-              Temp
-            </span>
-          </div>
-          <p className="text-3xl font-bold text-white">
-            {data.temperature?.toFixed(1)}
-            <span className="text-lg text-gray-500">°C</span>
-          </p>
-        </div>
-
-        {/* Humidity */}
-        <div className="bg-[#0E1A0E]/60 p-4 rounded-xl border border-[#879d7b]/10 hover:border-[#4ade80]/30 transition-colors group">
-          <div className="flex items-center gap-2 text-gray-400 mb-2 group-hover:text-[#4ade80] transition-colors">
-            <Droplets size={18} />
-            <span className="text-xs uppercase tracking-wider font-medium">
-              Humidity
-            </span>
-          </div>
-          <p className="text-3xl font-bold text-white">
-            {data.humidity?.toFixed(1)}
-            <span className="text-lg text-gray-500">%</span>
-          </p>
-        </div>
-
         {/* Soil Moisture */}
-        <div className="bg-[#0E1A0E]/60 p-4 rounded-xl border border-[#879d7b]/10 hover:border-[#4ade80]/30 transition-colors group">
+        <div className="bg-[#0E1A0E]/60 p-4 rounded-xl border border-[#879d7b]/10 hover:border-[#4ade80]/30 transition-colors group col-span-2">
           <div className="flex items-center gap-2 text-gray-400 mb-2 group-hover:text-[#4ade80] transition-colors">
             <Wind size={18} />
             <span className="text-xs uppercase tracking-wider font-medium">
-              Moisture
+              {t("moisture")}
             </span>
           </div>
           <p className="text-3xl font-bold text-white">
@@ -123,10 +92,10 @@ export default function SensorDataWidget() {
         </div>
 
         {/* NPK Nutrients */}
-        <div className="bg-[#0E1A0E]/60 p-4 rounded-xl border border-[#879d7b]/10 hover:border-[#4ade80]/30 transition-colors group">
+        <div className="bg-[#0E1A0E]/60 p-4 rounded-xl border border-[#879d7b]/10 hover:border-[#4ade80]/30 transition-colors group col-span-2">
           <div className="flex items-center gap-2 text-gray-400 mb-2 group-hover:text-[#4ade80] transition-colors">
             <span className="text-xs uppercase tracking-wider font-bold">
-              NPK
+              {t("npk")}
             </span>
             <span className="text-[10px] text-gray-500">mg/kg</span>
           </div>
@@ -170,7 +139,7 @@ export default function SensorDataWidget() {
 
       <div className="mt-4 text-right">
         <span className="text-[10px] text-gray-500">
-          Last updated: {new Date().toLocaleTimeString()}
+          {t("last_updated")}: {new Date().toLocaleTimeString()}
         </span>
       </div>
     </div>

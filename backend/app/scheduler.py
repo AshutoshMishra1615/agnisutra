@@ -4,6 +4,7 @@ from .database import SessionLocal
 from .models import User, SensorLog
 from .manager import manager
 import random
+import json
 
 # Mock Weather Service (Replace with real API call like OpenWeatherMap)
 def get_weather_forecast(lat, lon):
@@ -45,11 +46,13 @@ async def check_conditions_job():
 
             # 3. Send Alerts via WebSocket
             if alerts:
-                for alert in alerts:
-                    print(f"🚀 Sending Alert to {user.name}: {alert}")
-                    # In a real app, you'd target the specific user's websocket connection
-                    # For now, we broadcast to all for the demo
-                    await manager.broadcast(f"Alert for {user.name}: {alert}")
+                alert_data = {
+                    "user_id": user.id,
+                    "messages": alerts
+                }
+                json_message = json.dumps(alert_data)
+                print(f"🚀 Sending Alert to {user.name}: {json_message}")
+                await manager.broadcast(json_message)
                     
     except Exception as e:
         print(f"❌ Scheduler Error: {e}")

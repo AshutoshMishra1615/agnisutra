@@ -1,10 +1,10 @@
 "use client";
 
-import { createContext, useState, ReactNode } from "react";
+import { createContext, useState, useEffect, ReactNode } from "react";
 
 type User = {
   access_Token: string;
-  email: String;
+  email: string;
 };
 
 type AuthContextType = {
@@ -13,13 +13,27 @@ type AuthContextType = {
   clearUser: () => void;
 };
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined
+);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUserState] = useState<User | null>(null);
 
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        setUserState(JSON.parse(storedUser));
+      } catch (e) {
+        console.error("Failed to parse user from localStorage", e);
+        localStorage.removeItem("user");
+      }
+    }
+  }, []);
+
   const setUser = (userData: User) => {
-       console.log(userData)
+    console.log(userData);
     setUserState(userData);
     localStorage.setItem("user", JSON.stringify(userData)); // Save user data in localStorage
   };

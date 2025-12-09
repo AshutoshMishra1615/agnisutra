@@ -1,12 +1,15 @@
 from contextlib import asynccontextmanager
 import pickle
 import joblib
+import json
 import tensorflow as tf
 from tensorflow.keras.layers import InputLayer
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
 from .scheduler import check_conditions_job
 
 from .routers import auth, iot, krishi_saathi, disease
@@ -26,6 +29,7 @@ async def lifespan(app: FastAPI):
     try:
         import os
         current_dir = os.path.dirname(os.path.abspath(__file__))
+        project_root = os.path.abspath(os.path.join(current_dir, "../../"))
         
         # 1. Load Keras Model (Fertilizer Recommender)
         model_path = os.path.join(current_dir, "final_model.keras")
@@ -54,6 +58,66 @@ async def lifespan(app: FastAPI):
         else:
             print(f"❌ Preprocessor file not found at {preprocessor_path}")
             ml_models["preprocessor"] = None
+
+        # 3. Load Plant Disease CNN Model
+        # Try backend/app/models/plant_disease_model.h5 or CNN_PLANT_DISEASE/plant_disease_prediction_model.h5
+        cnn_paths = [
+            os.path.join(current_dir, "models", "plant_disease_prediction_model.h5"),
+            os.path.join(current_dir, "models", "plant_disease_model.h5"),
+            os.path.join(project_root, "CNN_PLANT_DISEASE", "plant_disease_prediction_model.h5"),
+            os.path.join(current_dir, "plant_disease_model.h5")
+        ]
+        
+        ml_models["disease_cnn"] = None
+        for path in cnn_paths:
+            if os.path.exists(path):
+                try:
+                    ml_models["disease_cnn"] = tf.keras.models.load_model(path)
+                    print(f"✅ Disease CNN Model loaded from {path}")
+                    break
+                except Exception as e:
+                    print(f"❌ Failed to load Disease CNN from {path}: {e}")
+        
+        if not ml_models["disease_cnn"]:
+            print("⚠️ Disease CNN Model not found. Using GPT-4 Vision fallback.")
+
+        # 4. Load Class Indices
+        indices_paths = [
+            os.path.join(current_dir, "models", "class_indices.json"),
+            os.path.join(project_root, "CNN_PLANT_DISEASE", "class_indices.json")
+        ]
+        
+        ml_models["class_indices"] = None
+        for path in indices_paths:
+            if os.path.exists(path):
+                try:
+                    with open(path, "r") as f:
+                        ml_models["class_indices"] = json.load(f)
+                    print(f"✅ Class Indices loaded from {path}")
+                    break
+                except Exception as e:
+                    print(f"❌ Failed to load Class Indices from {path}: {e}")
+        
+        if not ml_models["class_indices"]:
+            print("❌ Class Indices not found in any location.")
+
+        # 5. Load FAISS Index for Disease RAG
+        faiss_path = os.path.join(current_dir, "faiss_disease_index")
+        if os.path.exists(os.path.join(faiss_path, "index.faiss")):
+            try:
+                embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+                ml_models["disease_vectorstore"] = FAISS.load_local(
+                    faiss_path, 
+                    embeddings, 
+                    allow_dangerous_deserialization=True
+                )
+                print(f"✅ Disease FAISS Index loaded from {faiss_path}")
+            except Exception as e:
+                print(f"❌ Failed to load Disease FAISS Index: {e}")
+                ml_models["disease_vectorstore"] = None
+        else:
+            print(f"⚠️ Disease FAISS Index not found at {faiss_path}")
+            ml_models["disease_vectorstore"] = None
             
     except Exception as e:
         print(f"Error loading ML model: {e}")
