@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import '../services/ai_service.dart';
 
 class AiAssistantScreen extends StatefulWidget {
@@ -20,7 +22,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
   @override
   void initState() {
     super.initState();
-    _sessionId = DateTime.now().millisecondsSinceEpoch.toString();
+    // _sessionId = DateTime.now().millisecondsSinceEpoch.toString();
     // Add initial greeting
     _messages.add({'role': 'ai', 'content': 'ai_greeting'.tr()});
   }
@@ -36,16 +38,45 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
     _controller.clear();
     _scrollToBottom();
 
+    Map<String, dynamic> yieldContext = {};
+    try {
+      final box = await Hive.openBox('last_recommendation');
+      if (box.containsKey('data')) {
+        final data = box.get('data');
+        if (data is Map) {
+          yieldContext = Map<String, dynamic>.from(data);
+        }
+      }
+    } catch (e) {
+      print('Error loading yield context: $e');
+    }
+
     try {
       final response = await _aiService.chat(
-        sessionId: _sessionId,
+        sessionId: "token", // Service will replace this with actual token
         query: query,
+        language: context.locale.languageCode,
+        yieldContext: yieldContext,
       );
 
-      if (response != null && response['response'] != null) {
-        setState(() {
-          _messages.add({'role': 'ai', 'content': response['response']});
-        });
+      if (response != null) {
+        final content =
+            response['response'] ??
+            response['answer'] ??
+            response['message'] ??
+            response['reply'] ??
+            response['content'];
+
+        if (content != null) {
+          setState(() {
+            _messages.add({'role': 'ai', 'content': content.toString()});
+          });
+        } else {
+          print('AI Response missing content key: $response');
+          setState(() {
+            _messages.add({'role': 'ai', 'content': 'no_response'.tr()});
+          });
+        }
       } else {
         setState(() {
           _messages.add({'role': 'ai', 'content': 'no_response'.tr()});
@@ -130,11 +161,52 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                       ),
                       border: isUser ? null : Border.all(color: Colors.white24),
                     ),
-                    child: Text(
-                      message['content'] ?? '',
-                      style: TextStyle(
-                        color: isUser ? Colors.black : Colors.white,
-                        fontSize: 16,
+                    child: MarkdownBody(
+                      data: message['content'] ?? '',
+                      styleSheet: MarkdownStyleSheet(
+                        p: TextStyle(
+                          color: isUser ? Colors.black : Colors.white,
+                          fontSize: 16,
+                        ),
+                        strong: TextStyle(
+                          color: isUser ? Colors.black : Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        em: TextStyle(
+                          color: isUser ? Colors.black : Colors.white,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        h1: TextStyle(
+                          color: isUser ? Colors.black : Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        h2: TextStyle(
+                          color: isUser ? Colors.black : Colors.white,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        h3: TextStyle(
+                          color: isUser ? Colors.black : Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        code: TextStyle(
+                          color: isUser ? Colors.black87 : Colors.white70,
+                          backgroundColor: isUser
+                              ? Colors.white.withOpacity(0.3)
+                              : Colors.black.withOpacity(0.3),
+                          fontFamily: 'monospace',
+                        ),
+                        codeblockDecoration: BoxDecoration(
+                          color: isUser
+                              ? Colors.white.withOpacity(0.3)
+                              : Colors.black.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        listBullet: TextStyle(
+                          color: isUser ? Colors.black : Colors.white,
+                        ),
                       ),
                     ),
                   ),

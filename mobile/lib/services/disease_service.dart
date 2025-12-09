@@ -7,7 +7,11 @@ class DiseaseService {
   final Dio _dio = Dio();
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  Future<Map<String, dynamic>?> predictDisease(File imageFile) async {
+  Future<String?> predictDisease(
+    File imageFile,
+    String cropName,
+    String query,
+  ) async {
     try {
       String? token = await _storage.read(key: 'access_token');
 
@@ -17,6 +21,8 @@ class DiseaseService {
           imageFile.path,
           filename: fileName,
         ),
+        "crop_name": cropName,
+        "query": query,
       });
 
       final response = await _dio.post(
@@ -31,7 +37,7 @@ class DiseaseService {
       );
 
       if (response.statusCode == 200) {
-        return response.data;
+        return response.data.toString();
       }
       return null;
     } catch (e) {

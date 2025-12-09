@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'add_crop_details_screen.dart';
 
 class SelectCropScreen extends StatefulWidget {
   const SelectCropScreen({super.key});
@@ -72,11 +74,14 @@ class _SelectCropScreenState extends State<SelectCropScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context, _selectedCrops),
+          onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Select Crops',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        title: Text(
+          'select_crops'.tr(),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       body: Padding(
@@ -159,13 +164,14 @@ class _SelectCropScreenState extends State<SelectCropScreen> {
                 ),
               ),
             ],
-            const Text(
-              'Add the crops that you want to add.',
-              style: TextStyle(color: Colors.white70, fontSize: 16),
+            Text(
+              'add_crops_instruction'.tr(),
+              style: const TextStyle(color: Colors.white70, fontSize: 16),
             ),
             const SizedBox(height: 24),
             Expanded(
               child: GridView.builder(
+                padding: const EdgeInsets.only(bottom: 100),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
                   crossAxisSpacing: 16,
@@ -223,6 +229,46 @@ class _SelectCropScreenState extends State<SelectCropScreen> {
           ],
         ),
       ),
+      floatingActionButton: _selectedCrops.isNotEmpty
+          ? Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddCropDetailsScreen(
+                          cropName: _selectedCrops.join(", "),
+                        ),
+                      ),
+                    );
+
+                    if (result != null && context.mounted) {
+                      Navigator.pop(context, result);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFC5E1A5),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: Text(
+                    'next'.tr(),
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+            )
+          : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

@@ -61,15 +61,128 @@ class _HomeCarouselState extends State<HomeCarousel> {
   }
 
   Future<void> _takePicture() async {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1E1E1E),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.camera_alt, color: Color(0xFFC5E1A5)),
+                title: Text(
+                  'take_photo'.tr(),
+                  style: const TextStyle(color: Colors.white),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  _processImage(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.photo_library,
+                  color: Color(0xFFC5E1A5),
+                ),
+                title: Text(
+                  'choose_gallery'.tr(),
+                  style: const TextStyle(color: Colors.white),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  _processImage(ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<Map<String, String>?> _showDetailsDialog() async {
+    final cropController = TextEditingController();
+    final queryController = TextEditingController();
+
+    return showDialog<Map<String, String>>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E1E),
+        title: Text(
+          'enter_details'.tr(),
+          style: const TextStyle(color: Colors.white),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: cropController,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                labelText: 'crop_name'.tr(),
+                labelStyle: const TextStyle(color: Colors.white70),
+                enabledBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white30),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: queryController,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                labelText: 'query'.tr(),
+                labelStyle: const TextStyle(color: Colors.white70),
+                enabledBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white30),
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'cancel'.tr(),
+              style: const TextStyle(color: Colors.white70),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, {
+              'cropName': cropController.text,
+              'query': queryController.text,
+            }),
+            child: Text(
+              'submit'.tr(),
+              style: const TextStyle(color: Color(0xFFC5E1A5)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _processImage(ImageSource source) async {
     try {
-      final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
+      final XFile? photo = await _picker.pickImage(source: source);
       if (photo == null) return;
+
+      final details = await _showDetailsDialog();
+      if (details == null) return;
 
       setState(() {
         _isUploading = true;
       });
 
-      final result = await _diseaseService.predictDisease(File(photo.path));
+      final result = await _diseaseService.predictDisease(
+        File(photo.path),
+        details['cropName'] ?? '',
+        details['query'] ?? '',
+      );
 
       if (mounted) {
         setState(() {
@@ -96,7 +209,7 @@ class _HomeCarouselState extends State<HomeCarousel> {
     }
   }
 
-  void _showResultDialog(Map<String, dynamic> result) {
+  void _showResultDialog(String result) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -106,47 +219,9 @@ class _HomeCarouselState extends State<HomeCarousel> {
           style: const TextStyle(color: Colors.white),
         ),
         content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '${'disease'.tr()}: ${result['disease_name'] ?? 'Unknown'}',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '${'confidence'.tr()}: ${result['confidence'] ?? 'N/A'}',
-                style: const TextStyle(color: Colors.white70),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                '${'description'.tr()}:',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                result['description'] ?? 'No description available.',
-                style: const TextStyle(color: Colors.white70),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                '${'treatment'.tr()}:',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                result['treatment'] ?? 'No treatment info available.',
-                style: const TextStyle(color: Colors.white70),
-              ),
-            ],
+          child: Text(
+            result,
+            style: const TextStyle(color: Colors.white, fontSize: 16),
           ),
         ),
         actions: [

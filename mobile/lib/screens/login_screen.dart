@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 // import 'package:flutter_svg/flutter_svg.dart';
 import 'home_screen.dart';
 import 'register_screen.dart';
@@ -28,9 +29,9 @@ class _LoginScreenState extends State<LoginScreen> {
         r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
       ),
     )) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid email')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('enter_valid_email'.tr())));
     }
 
     // if (_emailController.text.isEmpty) {
@@ -39,9 +40,9 @@ class _LoginScreenState extends State<LoginScreen> {
     //   ).showSnackBar(const SnackBar(content: Text('Please enter your name')));
     // }
     if (_passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter your password')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('enter_password'.tr())));
     }
 
     bool success = await _authService.login(
@@ -62,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Login Failed')));
+      ).showSnackBar(SnackBar(content: Text('login_failed'.tr())));
     }
   }
 
@@ -137,10 +138,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Center(
+                              Center(
                                 child: Text(
-                                  'Sign In',
-                                  style: TextStyle(
+                                  'sign_in'.tr(),
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 28,
                                     fontWeight: FontWeight.bold,
@@ -150,19 +151,19 @@ class _LoginScreenState extends State<LoginScreen> {
                               const SizedBox(height: 30),
 
                               // Email Field
-                              _buildLabel('Email'),
+                              _buildLabel('email'.tr()),
                               _buildTextField(
                                 controller: _emailController,
-                                hint: 'Email',
+                                hint: 'email'.tr(),
                                 keyboardType: TextInputType.emailAddress,
                               ),
                               const SizedBox(height: 16),
 
                               // Password Field
-                              _buildLabel('Password'),
+                              _buildLabel('password'.tr()),
                               _buildTextField(
                                 controller: _passwordController,
-                                hint: 'Password',
+                                hint: 'password'.tr(),
                                 obscureText: true,
                               ),
                               const SizedBox(height: 24),
@@ -185,9 +186,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ? const CircularProgressIndicator(
                                           color: Colors.white,
                                         )
-                                      : const Text(
-                                          'Sign In',
-                                          style: TextStyle(
+                                      : Text(
+                                          'sign_in'.tr(),
+                                          style: const TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.black87,
@@ -210,19 +211,41 @@ class _LoginScreenState extends State<LoginScreen> {
                                     );
                                   },
                                   child: RichText(
-                                    text: const TextSpan(
-                                      text: 'New User ? ',
-                                      style: TextStyle(color: Colors.white),
+                                    text: TextSpan(
+                                      text: 'new_user'.tr(),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                      ),
                                       children: [
                                         TextSpan(
-                                          text: 'Create Account',
-                                          style: TextStyle(
+                                          text: 'create_account'.tr(),
+                                          style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                             decoration:
                                                 TextDecoration.underline,
                                           ),
                                         ),
                                       ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              Center(
+                                child: TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const HomeScreen(),
+                                      ),
+                                    );
+                                  },
+                                  child: Text(
+                                    'continue_as_guest'.tr(),
+                                    style: const TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 16,
                                     ),
                                   ),
                                 ),

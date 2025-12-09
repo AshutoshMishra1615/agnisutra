@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../constants.dart';
 
 class WeatherData {
   final String day;
@@ -19,6 +21,35 @@ class WeatherData {
 
 class WeatherService {
   final Dio _dio = Dio();
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+
+  Future<Map<String, dynamic>?> getBackendWeather(
+    double lat,
+    double lon,
+  ) async {
+    try {
+      String? token = await _storage.read(key: 'access_token');
+
+      final response = await _dio.post(
+        '${AppConstants.baseUrl}/krishi-saathi/weather',
+        data: {"lat": lat, "lon": lon},
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        return response.data;
+      }
+      return null;
+    } catch (e) {
+      print('Backend Weather Service Error: $e');
+      return null;
+    }
+  }
 
   Future<List<WeatherData>> getWeeklyForecast(double lat, double lon) async {
     try {
@@ -51,16 +82,17 @@ class WeatherService {
               date: '${_getMonthName(date.month)} ${date.day}',
               icon: _getIcon(weatherCodes[i]),
               description: _getDescription(weatherCodes[i]),
-              temp: '${temps[i].round()}',
+              temp: temps[i].toStringAsFixed(1),
             ),
           );
         }
         return forecast;
       }
       return [];
-    } catch (e) {
-      print('Error fetching weather: $e');
-      return [];
+    } catch (e, stackTrace) {
+      debugPrint('Error fetching weather: $e');
+      debugPrint(stackTrace.toString());
+      rethrow;
     }
   }
 

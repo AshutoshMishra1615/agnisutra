@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import '../models/crop_data.dart';
-import 'add_crop_to_field_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import '../services/yield_service.dart';
+// import '../models/crop_data.dart';
+import 'recommended_fertilizer_screen.dart';
 
 class AddCropDetailsScreen extends StatefulWidget {
   final String cropName;
@@ -12,25 +16,140 @@ class AddCropDetailsScreen extends StatefulWidget {
 }
 
 class _AddCropDetailsScreenState extends State<AddCropDetailsScreen> {
-  final _maturityController = TextEditingController();
+  // final _maturityController = TextEditingController();
   final _districtController = TextEditingController();
   final _pinController = TextEditingController();
   final _stateController = TextEditingController();
-  final _nitrogenController = TextEditingController();
-  final _phosphorusController = TextEditingController();
-  final _potassiumController = TextEditingController();
-  final _irrigationController = TextEditingController();
+
+  // New controllers for Fertilizer Recommendation
+  final _targetYieldController = TextEditingController();
+  final _soilNController = TextEditingController();
+  final _soilPController = TextEditingController();
+  final _soilKController = TextEditingController();
+  final _tempController = TextEditingController();
+  final _moistureController = TextEditingController();
+
+  final _yieldService = YieldService();
+  bool _isLoadingLocation = false;
+  bool _isPredicting = false;
+  // bool _showAdvanced = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentLocationAndData();
+  }
+
+  Future<void> _getCurrentLocationAndData() async {
+    setState(() {
+      _isLoadingLocation = true;
+    });
+
+    try {
+      // 1. Get Location
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) throw 'Location services are disabled.';
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied)
+          throw 'Location permissions are denied';
+      }
+      if (permission == LocationPermission.deniedForever)
+        throw 'Location permissions are permanently denied.';
+
+      Position position = await Geolocator.getCurrentPosition();
+
+      // Fill Address
+      try {
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+          position.latitude,
+          position.longitude,
+        );
+        if (placemarks.isNotEmpty) {
+          Placemark place = placemarks[0];
+          if (mounted) {
+            setState(() {
+              _districtController.text =
+                  place.subAdministrativeArea ?? place.locality ?? '';
+              _pinController.text = place.postalCode ?? '';
+              _stateController.text = place.administrativeArea ?? '';
+            });
+          }
+        }
+      } catch (e) {
+        debugPrint('Error getting address: $e');
+      }
+
+      // 2. Fetch Weather Data
+      try {
+        final weatherData = await _yieldService.getWeatherData(
+          position.latitude,
+          position.longitude,
+        );
+        if (weatherData != null && mounted) {
+          setState(() {
+            if (weatherData['stats'] != null &&
+                weatherData['stats']['mean_temp_gs_C'] != null) {
+              _tempController.text = weatherData['stats']['mean_temp_gs_C']
+                  .toString();
+            } else {
+              _tempController.text = (weatherData['temperature'] ?? '')
+                  .toString();
+            }
+            // Fallback moisture from humidity if IoT fails
+            if (_moistureController.text.isEmpty) {
+              _moistureController.text = (weatherData['humidity'] ?? '')
+                  .toString();
+            }
+          });
+        }
+      } catch (e) {
+        debugPrint('Error fetching weather: $e');
+      }
+
+      // 3. Fetch IoT Data (Soil)
+      try {
+        final iotData = await _yieldService.getIoTData();
+        if (iotData != null && mounted) {
+          setState(() {
+            _soilNController.text = (iotData['nitrogen'] ?? '').toString();
+            _soilPController.text = (iotData['phosphorus'] ?? '').toString();
+            _soilKController.text = (iotData['potassium'] ?? '').toString();
+            _moistureController.text = (iotData['moisture'] ?? '').toString();
+          });
+        }
+      } catch (e) {
+        debugPrint('Error fetching IoT data: $e');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingLocation = false;
+        });
+      }
+    }
+  }
 
   @override
   void dispose() {
-    _maturityController.dispose();
+    // _maturityController.dispose();
     _districtController.dispose();
     _pinController.dispose();
     _stateController.dispose();
-    _nitrogenController.dispose();
-    _phosphorusController.dispose();
-    _potassiumController.dispose();
-    _irrigationController.dispose();
+    _targetYieldController.dispose();
+    _soilNController.dispose();
+    _soilPController.dispose();
+    _soilKController.dispose();
+    _tempController.dispose();
+    _moistureController.dispose();
     super.dispose();
   }
 
@@ -45,9 +164,12 @@ class _AddCropDetailsScreenState extends State<AddCropDetailsScreen> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Add Crop',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        title: Text(
+          'add_crop'.tr(),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -55,12 +177,13 @@ class _AddCropDetailsScreenState extends State<AddCropDetailsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle('CROP DETAILS'),
-            const SizedBox(height: 16),
-            _buildLabel('Maturity Days'),
-            _buildTextField(_maturityController),
+            // _buildSectionTitle('crop_details'.tr()),
+            // const SizedBox(height: 16),
+            // _buildLabel('maturity_days'.tr()),
+            // _buildTextField(_maturityController),
             const SizedBox(height: 24),
-            _buildSectionTitle('WEATHER AND CLIMATE'),
+
+            _buildSectionTitle('location'.tr()),
             const SizedBox(height: 16),
             Row(
               children: [
@@ -68,7 +191,7 @@ class _AddCropDetailsScreenState extends State<AddCropDetailsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildLabel('District'),
+                      _buildLabel('district'.tr()),
                       _buildTextField(_districtController),
                     ],
                   ),
@@ -78,7 +201,7 @@ class _AddCropDetailsScreenState extends State<AddCropDetailsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildLabel('PIN'),
+                      _buildLabel('pin'.tr()),
                       _buildTextField(_pinController),
                     ],
                   ),
@@ -86,62 +209,60 @@ class _AddCropDetailsScreenState extends State<AddCropDetailsScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            _buildLabel('State'),
+            _buildLabel('state'.tr()),
             _buildTextField(_stateController),
             const SizedBox(height: 16),
             ElevatedButton.icon(
-              onPressed: () {
-                // TODO: Implement get location
-              },
-              icon: const Icon(Icons.my_location, color: Colors.black),
-              label: const Text(
-                'Get Current Location',
-                style: TextStyle(color: Colors.black),
+              onPressed: _isLoadingLocation ? null : _getCurrentLocationAndData,
+              icon: _isLoadingLocation
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.black,
+                      ),
+                    )
+                  : const Icon(Icons.refresh, color: Colors.black),
+              label: Text(
+                _isLoadingLocation ? 'syncing_data'.tr() : 'refresh_data'.tr(),
+                style: const TextStyle(color: Colors.black),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFC5E1A5),
+                disabledBackgroundColor: const Color(0xFFC5E1A5),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),
             ),
             const SizedBox(height: 24),
-            _buildSectionTitle('FERTILIZER'),
+
+            _buildSectionTitle('yield_goal'.tr()),
             const SizedBox(height: 16),
-            _buildLabel('Nitrogen (kg/hector)'),
-            _buildTextField(_nitrogenController),
-            const SizedBox(height: 16),
-            _buildLabel('Phosphorus (kg/hector)'),
-            _buildTextField(_phosphorusController),
-            const SizedBox(height: 16),
-            _buildLabel('Potassium (kg/hector)'),
-            _buildTextField(_potassiumController),
+            _buildLabel('target_yield'.tr()),
+            _buildTextField(_targetYieldController, hint: '2.5'),
             const SizedBox(height: 24),
-            _buildSectionTitle('IRRIGATIONS'),
-            const SizedBox(height: 16),
-            _buildLabel('Number of Irrigations'),
-            _buildTextField(_irrigationController),
+
             const SizedBox(height: 32),
             Center(
               child: ElevatedButton.icon(
-                onPressed: () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AddCropToFieldScreen(
-                        cropName: widget.cropName,
-                        maturityDays: _maturityController.text,
-                      ),
-                    ),
-                  );
-                  if (result != null && mounted) {
-                    Navigator.pop(context, result);
-                  }
-                },
-                icon: const Icon(Icons.auto_awesome, color: Colors.black),
-                label: const Text(
-                  'Predict Yield',
-                  style: TextStyle(
+                onPressed: _isPredicting ? null : _getRecommendation,
+                icon: _isPredicting
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.black,
+                        ),
+                      )
+                    : const Icon(Icons.spa, color: Colors.black),
+                label: Text(
+                  _isPredicting
+                      ? 'Calculating...'
+                      : 'Get Fertilizer Recommendation',
+                  style: const TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -166,6 +287,80 @@ class _AddCropDetailsScreenState extends State<AddCropDetailsScreen> {
     );
   }
 
+  Future<void> _getRecommendation() async {
+    if (_targetYieldController.text.isEmpty ||
+        _soilNController.text.isEmpty ||
+        _soilPController.text.isEmpty ||
+        _soilKController.text.isEmpty ||
+        _tempController.text.isEmpty ||
+        _moistureController.text.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
+      return;
+    }
+
+    setState(() => _isPredicting = true);
+    try {
+      final result = await _yieldService.getFertilizerRecommendation(
+        crop: widget.cropName,
+        targetYield: double.parse(_targetYieldController.text),
+        soilN: double.parse(_soilNController.text),
+        soilP: double.parse(_soilPController.text),
+        soilK: double.parse(_soilKController.text),
+        temperature: double.parse(_tempController.text),
+        moisture: double.parse(_moistureController.text),
+      );
+
+      if (result == null) throw "Recommendation failed";
+
+      if (!mounted) return;
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RecommendedFertilizerScreen(
+            result: result,
+            cropName: widget.cropName,
+            // maturityDays: _maturityController.text,
+          ),
+        ),
+      ).then((result) {
+        if (result != null && mounted) {
+          Navigator.pop(context, result);
+        }
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _isPredicting = false);
+    }
+  }
+
+  // Widget _buildResultItem(String label, dynamic value) {
+  //   return Column(
+  //     children: [
+  //       Text(
+  //         value.toString(),
+  //         style: const TextStyle(
+  //           color: Color(0xFFC5E1A5),
+  //           fontSize: 24,
+  //           fontWeight: FontWeight.bold,
+  //         ),
+  //       ),
+  //       const SizedBox(height: 4),
+  //       Text(
+  //         label,
+  //         style: const TextStyle(color: Colors.white70, fontSize: 12),
+  //       ),
+  //     ],
+  //   );
+  // }
+
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
@@ -187,13 +382,16 @@ class _AddCropDetailsScreenState extends State<AddCropDetailsScreen> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller) {
+  Widget _buildTextField(TextEditingController controller, {String? hint}) {
     return TextField(
       controller: controller,
       style: const TextStyle(color: Colors.white),
+      keyboardType: TextInputType.number,
       decoration: InputDecoration(
         filled: true,
         fillColor: const Color(0xFF3E3E3E),
+        hintText: hint,
+        hintStyle: const TextStyle(color: Colors.white30),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide.none,

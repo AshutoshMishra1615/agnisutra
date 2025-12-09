@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../services/auth_service.dart';
 import '../services/weather_service.dart';
 // import '../screens/satellite_map_screen.dart';
 import '../screens/select_crop_screen.dart';
-import '../screens/add_crop_details_screen.dart';
+import '../screens/field_details_screen.dart';
+import 'package:latlong2/latlong.dart';
 import '../models/crop_data.dart';
 import 'home_carousel.dart';
 
@@ -16,40 +21,72 @@ class DashboardWidget extends StatefulWidget {
 
 class _DashboardWidgetState extends State<DashboardWidget> {
   String userName = "User";
+  String? _locationName;
   final _authService = AuthService();
   final _weatherService = WeatherService();
   List<WeatherData> _weatherForecast = [];
 
-  final Map<String, String> _cropIcons = {
-    'Sunflower': 'assets/images/icons/Frame 264.png',
-    'Mustard': 'assets/images/icons/Frame 265.png',
-    'Soyabean': 'assets/images/icons/Frame 266.png',
-    'Safflower': 'assets/images/icons/Frame 267.png',
-    'Sesame': 'assets/images/icons/Frame 268.png',
-    'Niger': 'assets/images/icons/Frame 264 (1).png',
-    'Groundnut': 'assets/images/icons/Frame 267 (1).png',
-    'Castor': 'assets/images/icons/Frame 267 (2).png',
-  };
-
-  final List<CropData> _crops = [
-    CropData(
-      name: 'Sunflower',
-      statusColor: Colors.yellow,
-      progress: 45,
-      moisture: '3%',
-      temp: '28°C',
-      sownDate: '24 Nov',
-      lastIrrigation: '28 Nov',
-      lastPesticide: '29 Nov',
-      expectedYield: '25 Dec',
-    ),
+  final List<Map<String, dynamic>> _cropIcons = const [
+    {
+      'name': 'Sunflower',
+      'icon': 'assets/images/icons/Frame 264.png',
+      'color': Color(0xFFEBC25C),
+    },
+    {
+      'name': 'Mustard',
+      'icon': 'assets/images/icons/Frame 265.png',
+      'color': Color(0xFFEBC25C),
+    },
+    {
+      'name': 'Soyabean',
+      'icon': 'assets/images/icons/Frame 266.png',
+      'color': Color(0xFF96B65D),
+    },
+    {
+      'name': 'Safflower',
+      'icon': 'assets/images/icons/Frame 267.png',
+      'color': Color(0xFFEBC25C),
+    },
+    {
+      'name': 'Sesame',
+      'icon': 'assets/images/icons/Frame 268.png',
+      'color': Color(0xFFC69C6D),
+    },
+    {
+      'name': 'Niger',
+      'icon': 'assets/images/icons/Frame 264 (1).png',
+      'color': Color(0xFFE0E5C1),
+    },
+    {
+      'name': 'Groundnut',
+      'icon': 'assets/images/icons/Frame 267 (1).png',
+      'color': Color(0xFFC69C6D),
+    },
+    {
+      'name': 'Castor',
+      'icon': 'assets/images/icons/Frame 267 (2).png',
+      'color': Color(0xFF96B65D),
+    },
   ];
+
+  List<CropData> _crops = [];
+  late Box<CropData> _cropsBox;
 
   @override
   void initState() {
     super.initState();
     _loadUserName();
     _loadWeather();
+    _loadCrops();
+  }
+
+  Future<void> _loadCrops() async {
+    _cropsBox = await Hive.openBox<CropData>('crops');
+    if (mounted) {
+      setState(() {
+        _crops = _cropsBox.values.toList();
+      });
+    }
   }
 
   Future<void> _loadUserName() async {
@@ -62,11 +99,139 @@ class _DashboardWidgetState extends State<DashboardWidget> {
   }
 
   Future<void> _loadWeather() async {
-    final forecast = await _weatherService.getWeeklyForecast(28.6139, 77.2090);
-    if (mounted) {
-      setState(() {
-        _weatherForecast = forecast;
-      });
+    try {
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        // Fallback to default location (New Delhi) if permission denied
+        final forecast = await _weatherService.getWeeklyForecast(
+          28.6139,
+          77.2090,
+        );
+        if (mounted) {
+          setState(() {
+            _weatherForecast = forecast;
+            if (forecast.isNotEmpty) {
+              final currentTemp = '${forecast.first.temp}°C';
+              for (int i = 0; i < _crops.length; i++) {
+                final oldCrop = _crops[i];
+                _crops[i] = CropData(
+                  name: oldCrop.name,
+                  statusColor: oldCrop.statusColor,
+                  progress: oldCrop.progress,
+                  moisture: oldCrop.moisture,
+                  temp: currentTemp,
+                  sownDate: oldCrop.sownDate,
+                  lastIrrigation: oldCrop.lastIrrigation,
+                  lastPesticide: oldCrop.lastPesticide,
+                  expectedYield: oldCrop.expectedYield,
+                );
+              }
+            }
+          });
+        }
+        return;
+      }
+
+      final position = await Geolocator.getCurrentPosition();
+
+      try {
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+          position.latitude,
+          position.longitude,
+        );
+        if (placemarks.isNotEmpty) {
+          final place = placemarks[0];
+          if (mounted) {
+            setState(() {
+              _locationName = "${place.locality}, ${place.administrativeArea}";
+            });
+          }
+        }
+      } catch (e) {
+        debugPrint("Error getting placemark: $e");
+        if (mounted) {
+          setState(() {
+            _locationName =
+                "${position.latitude.toStringAsFixed(2)}, ${position.longitude.toStringAsFixed(2)}";
+          });
+        }
+      }
+
+      final forecast = await _weatherService.getWeeklyForecast(
+        position.latitude,
+        position.longitude,
+      );
+      debugPrint('Dashboard Weather Forecast: ${forecast.length} items');
+      if (forecast.isNotEmpty) {
+        debugPrint('First item temp: ${forecast.first.temp}');
+      }
+      if (mounted) {
+        setState(() {
+          _weatherForecast = forecast;
+          if (forecast.isNotEmpty) {
+            final currentTemp = '${forecast.first.temp}°C';
+            for (int i = 0; i < _crops.length; i++) {
+              final oldCrop = _crops[i];
+              _crops[i] = CropData(
+                name: oldCrop.name,
+                statusColor: oldCrop.statusColor,
+                progress: oldCrop.progress,
+                moisture: oldCrop.moisture,
+                temp: currentTemp,
+                sownDate: oldCrop.sownDate,
+                lastIrrigation: oldCrop.lastIrrigation,
+                lastPesticide: oldCrop.lastPesticide,
+                expectedYield: oldCrop.expectedYield,
+                latitude: oldCrop.latitude,
+                longitude: oldCrop.longitude,
+              );
+            }
+          }
+        });
+      }
+    } catch (e, stackTrace) {
+      debugPrint('Error loading weather for current location: $e');
+      debugPrint(stackTrace.toString());
+
+      try {
+        // Fallback on error
+        final forecast = await _weatherService.getWeeklyForecast(
+          28.6139,
+          77.2090,
+        );
+        if (mounted) {
+          setState(() {
+            _weatherForecast = forecast;
+            if (forecast.isNotEmpty) {
+              final currentTemp = '${forecast.first.temp}°C';
+              for (int i = 0; i < _crops.length; i++) {
+                final oldCrop = _crops[i];
+                _crops[i] = CropData(
+                  name: oldCrop.name,
+                  statusColor: oldCrop.statusColor,
+                  progress: oldCrop.progress,
+                  moisture: oldCrop.moisture,
+                  temp: currentTemp,
+                  sownDate: oldCrop.sownDate,
+                  lastIrrigation: oldCrop.lastIrrigation,
+                  lastPesticide: oldCrop.lastPesticide,
+                  expectedYield: oldCrop.expectedYield,
+                  latitude: oldCrop.latitude,
+                  longitude: oldCrop.longitude,
+                );
+              }
+            }
+          });
+        }
+      } catch (e) {
+        debugPrint('Error loading fallback weather: $e');
+        // If fallback also fails, we can leave _weatherForecast as empty or show error state
+      }
     }
   }
 
@@ -77,23 +242,13 @@ class _DashboardWidgetState extends State<DashboardWidget> {
     );
 
     if (result == null) return;
-    final List<String> selectedCrops = List<String>.from(result);
 
-    if (!mounted) return;
-
-    for (final cropName in selectedCrops) {
-      final cropData = await Navigator.push<CropData>(
-        context,
-        MaterialPageRoute(
-          builder: (context) => AddCropDetailsScreen(cropName: cropName),
-        ),
-      );
-
-      if (cropData != null && mounted) {
-        setState(() {
-          _crops.add(cropData);
-        });
-      }
+    if (result is CropData) {
+      if (!mounted) return;
+      await _cropsBox.add(result);
+      setState(() {
+        _crops.add(result);
+      });
     }
   }
 
@@ -119,7 +274,12 @@ class _DashboardWidgetState extends State<DashboardWidget> {
                 },
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
+            Text(
+              'weather_in'.tr(args: [_locationName ?? 'locating'.tr()]),
+              style: const TextStyle(color: Colors.white70, fontSize: 14),
+            ),
+            const SizedBox(height: 8),
             SizedBox(
               height: 110,
               child: ListView.builder(
@@ -156,9 +316,9 @@ class _DashboardWidgetState extends State<DashboardWidget> {
               child: const Icon(Icons.add, color: Colors.white54, size: 30),
             ),
             const SizedBox(height: 10),
-            const Text(
-              'Add Crop',
-              style: TextStyle(color: Colors.white, fontSize: 16),
+            Text(
+              'add_crop'.tr(),
+              style: const TextStyle(color: Colors.white, fontSize: 16),
             ),
           ],
         ),
@@ -167,50 +327,70 @@ class _DashboardWidgetState extends State<DashboardWidget> {
   }
 
   Widget _buildCropCircle(CropData crop) {
-    final iconPath = _cropIcons[crop.name];
-    return Padding(
-      padding: const EdgeInsets.only(right: 16.0),
-      child: Column(
-        children: [
-          Container(
-            width: 60,
-            height: 60,
-            padding: const EdgeInsets.all(0),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              // border: Border.all(color: Colors.amber, width: 2),
+    final cropInfo = _cropIcons.firstWhere(
+      (info) => crop.name.startsWith(info['name'] as String),
+      orElse: () => <String, dynamic>{},
+    );
+    final iconPath = cropInfo['icon'] as String?;
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FieldDetailsScreen(
+              fieldName: crop.name,
+              location: (crop.latitude != null && crop.longitude != null)
+                  ? LatLng(crop.latitude!, crop.longitude!)
+                  : null,
             ),
-            child: Container(
-              decoration: const BoxDecoration(
+          ),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(right: 16.0),
+        child: Column(
+          children: [
+            Container(
+              width: 60,
+              height: 60,
+              padding: const EdgeInsets.all(0),
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Color(0xFF2C2C2C),
+                // border: Border.all(color: Colors.amber, width: 2),
               ),
-              child: iconPath != null
-                  ? ClipOval(
-                      child: Image.asset(
-                        iconPath,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Icon(
-                              Icons.local_florist,
-                              color: Colors.amber,
-                              size: 30,
-                            ),
+              child: Container(
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color(0xFF2C2C2C),
+                ),
+                child: iconPath != null
+                    ? ClipOval(
+                        child: Image.asset(
+                          iconPath,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(
+                                Icons.local_florist,
+                                color: Colors.amber,
+                                size: 30,
+                              ),
+                        ),
+                      )
+                    : const Icon(
+                        Icons.local_florist,
+                        color: Colors.amber,
+                        size: 30,
                       ),
-                    )
-                  : const Icon(
-                      Icons.local_florist,
-                      color: Colors.amber,
-                      size: 30,
-                    ),
+              ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            crop.name,
-            style: const TextStyle(color: Colors.white, fontSize: 16),
-          ),
-        ],
+            const SizedBox(height: 10),
+            Text(
+              crop.name,
+              style: const TextStyle(color: Colors.white, fontSize: 16),
+            ),
+          ],
+        ),
       ),
     );
   }
