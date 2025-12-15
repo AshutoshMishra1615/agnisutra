@@ -5,6 +5,7 @@ import 'your_fields_screen.dart';
 import 'alerts_screen.dart';
 import 'ai_assistant_screen.dart';
 import '../widgets/dashboard_widget.dart';
+// import '../services/auth_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,6 +16,23 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final int _selectedIndex = 0;
+  // final AuthService _authService = AuthService();
+  // String _userName = "User";
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _loadUserName();
+  // }
+
+  // Future<void> _loadUserName() async {
+  //   final name = await _authService.getUserName();
+  //   if (name != null && mounted) {
+  //     setState(() {
+  //       _userName = name;
+  //     });
+  //   }
+  // }
 
   void _onItemTapped(int index) {
     if (index == 1) {
@@ -77,21 +95,35 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 0,
         title: Row(
           children: [
-            Image.asset('assets/images/logo.png', height: 48, width: 48),
-            const SizedBox(width: 8),
-            const Text(
-              'AgniSutra',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
+            Image.asset('assets/images/logo.png', height: 40, width: 40),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Text(
+                //   'hello_user'.tr(args: [_userName]),
+                //   style: const TextStyle(
+                //     color: Colors.white,
+                //     fontSize: 14,
+                //     fontWeight: FontWeight.normal,
+                //   ),
+                // ),
+                const Text(
+                  'AgniSutra',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
+                ),
+              ],
             ),
+            // const Spacer(flex: 5),
           ],
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 8.0),
+            padding: const EdgeInsets.only(right: 6.0),
             child: ElevatedButton.icon(
               onPressed: () {
                 Navigator.push(
@@ -119,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
+                  horizontal: 16,
                   vertical: 8,
                 ),
               ),
@@ -173,7 +205,9 @@ class _HomeScreenState extends State<HomeScreen> {
           }),
         ),
         child: NavigationBar(
-          backgroundColor: const Color(0xFF1E1E1E),
+          backgroundColor: const Color(
+            0xFF0D0D0D,
+          ), // Match dashboard background
           selectedIndex: _selectedIndex,
           onDestinationSelected: _onItemTapped,
           destinations: [

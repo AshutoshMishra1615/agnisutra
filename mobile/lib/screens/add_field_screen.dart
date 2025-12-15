@@ -214,9 +214,51 @@ class _AddFieldScreenState extends State<AddFieldScreen> {
                 ),
               ),
             ),
+            if (widget.existingLocation != null) ...[
+              const SizedBox(height: 16),
+              Center(
+                child: TextButton(
+                  onPressed: _deleteField,
+                  child: const Text(
+                    'Delete Field',
+                    style: TextStyle(color: Colors.red, fontSize: 16),
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: 32),
           ],
         ),
+      ),
+    );
+  }
+
+  void _deleteField() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E1E),
+        title: const Text(
+          'Delete Field',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: const Text(
+          'Are you sure you want to delete this field?',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close dialog
+              Navigator.pop(context, {'delete': true}); // Return delete signal
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
       ),
     );
   }

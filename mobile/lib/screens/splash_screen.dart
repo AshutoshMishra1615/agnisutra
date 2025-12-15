@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'home_screen.dart';
-import 'login_screen.dart';
+import 'language_selection_screen.dart';
+import '../services/auth_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -11,42 +10,56 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final _storage = const FlutterSecureStorage();
-
   @override
   void initState() {
     super.initState();
-    _checkToken();
+    _initApp();
   }
 
-  Future<void> _checkToken() async {
-    // Simulate a delay for the splash effect
-    await Future.delayed(const Duration(seconds: 2));
+  Future<void> _initApp() async {
+    final authService = AuthService();
 
-    String? token = await _storage.read(key: 'access_token');
+    // Run the timer and the data fetching in parallel
+    // We enforce a timeout on the profile fetching so the splash screen doesn't hang forever
+    // The splash screen will show for at least 2 seconds, and at most 5 seconds
+    await Future.wait([
+      Future.delayed(const Duration(seconds: 2)), // Minimum splash duration
+      _preFetchUserProfile(authService).timeout(
+        const Duration(seconds: 5),
+        onTimeout: () {
+          debugPrint("Profile pre-fetch timed out");
+        },
+      ),
+    ]);
 
-    if (!mounted) return;
-
-    // Bypass auth code
-    // Navigator.of(context).pushReplacement(
-    //   MaterialPageRoute(builder: (context) => const HomeScreen()),
-    // );
-    // return;
-
-    if (token != null) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const LanguageSelectionScreen(),
+        ),
       );
-    } else {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-      );
+    }
+  }
+
+  Future<void> _preFetchUserProfile(AuthService authService) async {
+    try {
+      // Check if we have a token
+      final token = await authService.getToken();
+      if (token != null) {
+        // Pre-fetch profile so it's cached in AuthService
+        // This makes the ProfileScreen load instantly later
+        await authService.getUserProfile();
+      }
+    } catch (e) {
+      debugPrint("Error pre-fetching profile: $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF1E1E1E),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -56,10 +69,14 @@ class _SplashScreenState extends State<SplashScreen> {
             SizedBox(height: 20),
             Text(
               'AgniSutra',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
             SizedBox(height: 20),
-            CircularProgressIndicator(),
+            CircularProgressIndicator(color: Colors.green),
           ],
         ),
       ),

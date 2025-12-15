@@ -7,6 +7,15 @@ class AuthService {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   static Map<String, dynamic>? _cachedProfile;
 
+  // Future<bool> isLoggedIn() async {
+  //   String? token = await _storage.read(key: 'access_token');
+  //   return token != null;
+  // }
+
+  Future<String?> getToken() async {
+    return await _storage.read(key: 'access_token');
+  }
+
   Future<bool> login(String email, String password) async {
     try {
       final response = await _dio.post(

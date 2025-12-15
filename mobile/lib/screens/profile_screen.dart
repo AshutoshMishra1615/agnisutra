@@ -17,23 +17,71 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final AuthService _authService = AuthService();
   final ImagePicker _picker = ImagePicker();
   Map<String, dynamic>? _userProfile;
-  bool _isLoading = true;
+  bool _isLoading = false; // Default to false to show Guest UI immediately
   bool _isEditing = false;
   int _imageRefreshKey = 0;
 
   @override
   void initState() {
     super.initState();
-    _fetchProfile();
+    _checkLoginStatus();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    final token = await _authService.getToken();
+    if (token != null) {
+      // Try to get cached profile first without loading spinner
+      final cachedProfile = await _authService.getUserProfile(
+        forceRefresh: false,
+      );
+
+      if (mounted) {
+        setState(() {
+          _userProfile = cachedProfile;
+          // Only show loader if we have NO data at all
+          _isLoading = _userProfile == null;
+        });
+      }
+
+      // If we didn't have cached data, or just to be sure, try fetching fresh data
+      // But if we already showed cached data, this happens in background
+      if (_userProfile == null) {
+        _fetchProfile();
+      } else {
+        // We have data, but let's try to update it silently in the background
+        _authService
+            .getUserProfile(forceRefresh: true)
+            .then((freshProfile) {
+              if (mounted && freshProfile != null) {
+                setState(() {
+                  _userProfile = freshProfile;
+                });
+              }
+            })
+            .catchError((e) {
+              // Backend unreachable? No problem, user is already seeing cached data.
+              debugPrint("Background profile update failed: $e");
+            });
+      }
+    }
   }
 
   Future<void> _fetchProfile({bool force = false}) async {
-    final profile = await _authService.getUserProfile(forceRefresh: force);
-    if (mounted) {
-      setState(() {
-        _userProfile = profile;
-        _isLoading = false;
-      });
+    try {
+      final profile = await _authService.getUserProfile(forceRefresh: force);
+      if (mounted) {
+        setState(() {
+          _userProfile = profile;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      // If fetch fails and we are loading, stop loading
+      if (mounted && _isLoading) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 

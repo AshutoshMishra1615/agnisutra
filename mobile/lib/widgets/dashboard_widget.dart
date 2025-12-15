@@ -262,7 +262,7 @@ class _DashboardWidgetState extends State<DashboardWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: 90,
+              height: 105,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: _crops.length + 1,
@@ -307,8 +307,8 @@ class _DashboardWidgetState extends State<DashboardWidget> {
         child: Column(
           children: [
             Container(
-              width: 60,
-              height: 60,
+              width: 70,
+              height: 70,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.white54, width: 1),
@@ -352,8 +352,8 @@ class _DashboardWidgetState extends State<DashboardWidget> {
         child: Column(
           children: [
             Container(
-              width: 60,
-              height: 60,
+              width: 70,
+              height: 70,
               padding: const EdgeInsets.all(0),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,

@@ -91,5 +91,13 @@
   "crop_name": "फसल का नाम",
   "query": "प्रश्न",
   "take_photo": "फोटो लें",
-  "choose_gallery": "गैलरी से चुनें"
+  "choose_gallery": "गैलरी से चुनें",
+  "sunflower": "सूरजमुखी",
+  "mustard": "सरसों",
+  "soyabean": "सोयाबीन",
+  "safflower": "कुसुम",
+  "sesame": "तिल",
+  "niger": "रामतिल",
+  "groundnut": "मूंगफली",
+  "castor": "अरंडी"
 }

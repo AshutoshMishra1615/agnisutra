@@ -397,8 +397,38 @@ class _FieldDetailsScreenState extends State<FieldDetailsScreen> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {
-                      // Handle delete
+                    onPressed: () async {
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          backgroundColor: const Color(0xFF3E3E3E),
+                          title: const Text(
+                            "Delete Field",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          content: const Text(
+                            "Are you sure you want to delete this field? This action cannot be undone.",
+                            style: TextStyle(color: Colors.white70),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text("Cancel"),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              child: const Text(
+                                "Delete",
+                                style: TextStyle(color: Colors.redAccent),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (confirm == true && context.mounted) {
+                        Navigator.pop(context, {'delete': true});
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFEF5350),

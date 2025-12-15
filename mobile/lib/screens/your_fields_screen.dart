@@ -146,10 +146,19 @@ class _YourFieldsScreenState extends State<YourFieldsScreen> {
                   );
 
                   if (result != null && mounted) {
-                    setState(() {
-                      _fields[index] = result as Map<String, dynamic>;
-                      _saveFields();
-                    });
+                    if (result is Map &&
+                        result.containsKey('delete') &&
+                        result['delete'] == true) {
+                      setState(() {
+                        _fields.removeAt(index);
+                        _saveFields();
+                      });
+                    } else {
+                      setState(() {
+                        _fields[index] = result as Map<String, dynamic>;
+                        _saveFields();
+                      });
+                    }
                   }
                 },
               ),
