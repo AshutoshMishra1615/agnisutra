@@ -1,32 +1,86 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
-root {
-  --base-color : #132a13;
-  
+:root {
+  /* Professional Agritech Palette */
+  --color-primary: #4ade80; /* Bright Green for accents */
+  --color-primary-dark: #22c55e;
+  --color-secondary: #879d7b; /* Muted Sage */
+
+  --color-bg-dark: #050b05; /* Very dark green/black */
+  --color-bg-card: #0f1f0f; /* Dark green card background */
+  --color-bg-card-hover: #162b16;
+
+  --color-text-main: #f0fdf4;
+  --color-text-muted: #86efac;
+
+  --font-sans: "Plus Jakarta Sans", "Inter", sans-serif;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-background: var(--color-bg-dark);
+  --color-foreground: var(--color-text-main);
+  --font-sans: var(--font-sans);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-main);
+  font-family: var(--font-sans);
+  background-image: radial-gradient(
+      circle at 10% 20%,
+      rgba(34, 197, 94, 0.05) 0%,
+      transparent 20%
+    ),
+    radial-gradient(
+      circle at 90% 80%,
+      rgba(34, 197, 94, 0.05) 0%,
+      transparent 20%
+    );
 }
 
-::placeholder{
-  color: gray;
+/* Glassmorphism Utilities */
+.glass-panel {
+  background: rgba(15, 31, 15, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(135, 157, 123, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.glass-card {
+  background: linear-gradient(
+    145deg,
+    rgba(20, 40, 20, 0.6),
+    rgba(10, 20, 10, 0.4)
+  );
+  border: 1px solid rgba(135, 157, 123, 0.15);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(74, 222, 128, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 40px -10px rgba(34, 197, 94, 0.1);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #050b05;
+}
+::-webkit-scrollbar-thumb {
+  background: #1f3f1f;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2f5f2f;
+}
+
+::placeholder {
+  color: #4b634b;
 }
 
 .lemon-regular {
@@ -34,4 +88,3 @@ body {
   font-weight: 400;
   font-style: normal;
 }
-

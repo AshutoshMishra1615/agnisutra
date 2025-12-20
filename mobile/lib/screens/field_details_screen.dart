@@ -68,10 +68,10 @@ class _FieldDetailsScreenState extends State<FieldDetailsScreen> {
       );
       setState(() {
         if (ndviData != null) {
-          _ndviValue = (ndviData['mean'] ?? ndviData['current'] ?? 'N/A')
+          _ndviValue = (ndviData['ndvi_flowering'] ?? ndviData['mean'] ?? 'N/A')
               .toString();
-          _ndviPeak = (ndviData['max'] ?? ndviData['peak'] ?? 'N/A').toString();
-          _ndviFinal = (ndviData['mean'] ?? ndviData['final'] ?? 'N/A')
+          _ndviPeak = (ndviData['ndvi_peak'] ?? ndviData['max'] ?? 'N/A').toString();
+          _ndviFinal = (ndviData['ndvi_veg_slope'] ?? ndviData['final'] ?? 'N/A')
               .toString();
         } else {
           _ndviValue = "N/A";

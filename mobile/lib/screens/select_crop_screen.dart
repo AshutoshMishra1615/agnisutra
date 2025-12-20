@@ -1,4 +1,21 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
+
+class SelectCropScreen extends StatelessWidget {
+  const SelectCropScreen({super.key});
+
+  final List<Map<String, String>> crops = const [
+    {'name': 'Sunflower', 'icon': 'assets/images/icons/Frame 264.png'},
+    {'name': 'Soybean', 'icon': 'assets/images/icons/Frame 265.png'},
+    {'name': 'Mustard', 'icon': 'assets/images/icons/Frame 266.png'},
+    {'name': 'Groundnut', 'icon': 'assets/images/icons/Frame 267.png'},
+    {'name': 'Sesame', 'icon': 'assets/images/icons/Frame 268.png'},
+    {'name': 'Castor', 'icon': 'assets/images/icons/Frame 264 (1).png'},
+    {'name': 'Safflower', 'icon': 'assets/images/icons/Frame 267 (1).png'},
+    {'name': 'Niger', 'icon': 'assets/images/icons/Frame 267 (2).png'},
+  ];
+
+=======
 import 'package:easy_localization/easy_localization.dart';
 import 'add_crop_details_screen.dart';
 
@@ -65,6 +82,7 @@ class _SelectCropScreenState extends State<SelectCropScreen> {
     });
   }
 
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,12 +94,18 @@ class _SelectCropScreenState extends State<SelectCropScreen> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
+<<<<<<< HEAD
+        title: const Text(
+          'Select Crops',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+=======
         title: Text(
           'select_crops'.tr(),
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
         ),
       ),
       body: Padding(
@@ -89,6 +113,11 @@ class _SelectCropScreenState extends State<SelectCropScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+<<<<<<< HEAD
+            const Text(
+              'Add the crops that you want to add.',
+              style: TextStyle(color: Colors.white70, fontSize: 16),
+=======
             if (_selectedCrops.isNotEmpty) ...[
               SizedBox(
                 height: 100,
@@ -167,11 +196,15 @@ class _SelectCropScreenState extends State<SelectCropScreen> {
             Text(
               'add_crops_instruction'.tr(),
               style: const TextStyle(color: Colors.white70, fontSize: 16),
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
             ),
             const SizedBox(height: 24),
             Expanded(
               child: GridView.builder(
+<<<<<<< HEAD
+=======
                 padding: const EdgeInsets.only(bottom: 100),
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
                   crossAxisSpacing: 16,
@@ -181,6 +214,46 @@ class _SelectCropScreenState extends State<SelectCropScreen> {
                 itemCount: crops.length,
                 itemBuilder: (context, index) {
                   final crop = crops[index];
+<<<<<<< HEAD
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context, crop['name']);
+                    },
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: const Color(0xFFEBC25C),
+                              width: 2,
+                            ),
+                            color: const Color(0xFF1E1E1E),
+                          ),
+                          child: Image.asset(
+                            crop['icon']!,
+                            height: 40,
+                            width: 40,
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Icon(
+                                  Icons.grass,
+                                  color: Colors.white,
+                                  size: 40,
+                                ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          crop['name']!,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+=======
                   final isSelected = _selectedCrops.contains(crop['name']);
                   return GestureDetector(
                     onTap: () => _toggleCrop(crop['name']),
@@ -221,6 +294,7 @@ class _SelectCropScreenState extends State<SelectCropScreen> {
                           ),
                         ],
                       ),
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
                     ),
                   );
                 },
@@ -229,6 +303,8 @@ class _SelectCropScreenState extends State<SelectCropScreen> {
           ],
         ),
       ),
+<<<<<<< HEAD
+=======
       floatingActionButton: _selectedCrops.isNotEmpty
           ? Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -269,6 +345,7 @@ class _SelectCropScreenState extends State<SelectCropScreen> {
             )
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
     );
   }
 }

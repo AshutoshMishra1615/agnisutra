@@ -1,28 +1,28 @@
 "use client";
 
 import { useAuth } from "../hooks/useAuth";
-import axios from "axios";
+import api from "../services/api";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 export default function LogOut() {
-  const { user, clearUser } = useAuth();
+  const { clearUser } = useAuth();
   const router = useRouter();
 
   const handleLogout = async () => {
     try {
-      await axios.post("/auth/logout", {}, {
-        headers: {
-          Authorization: `Bearer ${user?.access_Token}`,
-        },
-      });
-      clearUser(); // Clear user state in context
-      delete axios.defaults.headers.common["Authorization"]; // Remove Authorization header
+      // The api instance automatically adds the Authorization header from localStorage
+      await api.post("/auth/logout");
+
+      clearUser(); // Clear user state in context and localStorage
       toast.success("Logout Successful");
       router.push("/login"); // Redirect to login page
     } catch (error) {
-      toast.error("Logout Unsuccessful");
+      // Even if the API call fails (e.g. token expired), we should still clear the local session
       console.error("Logout failed:", error);
+      clearUser();
+      toast.success("Logged out locally");
+      router.push("/login");
     }
   };
 

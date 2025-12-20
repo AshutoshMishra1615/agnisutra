@@ -1,16 +1,16 @@
 // app/profile/ProfileLayout.tsx
-"use client"
+"use client";
 
-import type { User } from "../types/user"
-import ProfileHeader from "../components/ProfileHeader"
-import CoverImage from "../components/CoverImage"
-import AvatarSection from "../components/AvatarSection"
-import InfoSection from "../components/InfoSection"
-import DangerZone from "../components/DangerSection"
+import type { User } from "../types/user";
+import ProfileHeader from "../components/ProfileHeader";
+import CoverImage from "../components/CoverImage";
+import AvatarSection from "../components/AvatarSection";
+import InfoSection from "../components/InfoSection";
+import DangerZone from "../components/DangerSection";
 
 export default function ProfileLayout({ user }: { user: User }) {
   return (
-    <div className="min-h-screen bg-[#06120a] text-white">
+    <div className="min-h-screen bg-[#050b05] bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-[#1a2e1a] via-[#050b05] to-[#050b05] text-white">
       <ProfileHeader />
       <main className="max-w-7xl mx-auto px-4 md:px-8">
         <CoverImage src={user.cover} alt={`${user.name} cover`} />
@@ -37,5 +37,5 @@ export default function ProfileLayout({ user }: { user: User }) {
         </section>
       </main>
     </div>
-  )
+  );
 }

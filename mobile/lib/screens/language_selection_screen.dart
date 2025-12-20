@@ -16,7 +16,11 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+<<<<<<< HEAD
+      backgroundColor: const Color(0xFF1E1E1E), // Dark background
+=======
       backgroundColor: const Color(0xFF010101), // Dark background
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -76,7 +80,11 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
+<<<<<<< HEAD
+                    backgroundColor: const Color(0xFFB0B0B0), // Greyish button
+=======
                     backgroundColor: const Color(0xFF3D5F3E), // Green button
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
                     ),
@@ -84,7 +92,11 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                   child: const Text(
                     'Accept',
                     style: TextStyle(
+<<<<<<< HEAD
+                      color: Colors.black87,
+=======
                       color: Colors.white,
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -116,11 +128,17 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         decoration: BoxDecoration(
+<<<<<<< HEAD
+          color: const Color(0xFF333333),
+          borderRadius: BorderRadius.circular(12),
+          border: isSelected ? Border.all(color: Colors.white, width: 1) : null,
+=======
           color: isSelected ? const Color(0xFF3D5F3E) : const Color(0xFF333333),
           borderRadius: BorderRadius.circular(12),
           border: isSelected
               ? Border.all(color: const Color(0xFF3D5F3E), width: 1)
               : null,
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -133,6 +151,17 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                 fontWeight: FontWeight.w500,
               ),
             ),
+<<<<<<< HEAD
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isSelected ? Colors.white : Colors.grey,
+                border: Border.all(color: Colors.grey),
+              ),
+            ),
+=======
             if (isSelected)
               Container(
                 width: 24,
@@ -156,6 +185,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                   border: Border.all(color: Colors.grey),
                 ),
               ),
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
           ],
         ),
       ),

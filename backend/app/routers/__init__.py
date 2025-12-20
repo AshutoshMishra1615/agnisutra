@@ -1,3 +1,3 @@
-from . import auth, yield_pred, iot
+from . import auth, krishi_saathi, iot, disease
 
-__all__ = ["auth", "yield_pred", "iot"]
+__all__ = ["auth", "krishi_saathi", "iot", "disease"]

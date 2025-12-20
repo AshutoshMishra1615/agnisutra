@@ -1,27 +1,32 @@
 // app/profile/components/DangerZone.tsx
-"use client"
-import React from "react"
+"use client";
+import React from "react";
+import { AlertTriangle, LogOut, Trash2 } from "lucide-react";
 
 export default function DangerZone() {
   return (
-    <div className="bg-[#07130d] rounded-md p-6 md:p-8">
-      <h3 className="text-lg font-semibold text-white">Danger Zone</h3>
-      <p className="text-sm text-gray-300 mt-2">
+    <div className="bg-[#1a2e1a]/20 backdrop-blur-md border border-red-500/20 rounded-xl p-6 md:p-8">
+      <div className="flex items-center gap-2 mb-2">
+        <AlertTriangle className="text-red-500" size={20} />
+        <h3 className="text-lg font-bold text-white">Danger Zone</h3>
+      </div>
+      <p className="text-sm text-gray-400">
         Actions here are irreversible. Use with caution.
       </p>
 
-      <div className="mt-6 flex gap-4">
+      <div className="mt-6 flex flex-wrap gap-4">
         <button
-          className="px-6 py-2 border border-red-400 text-red-400 rounded-md text-sm hover:bg-red-900/30 transition"
+          className="flex items-center gap-2 px-6 py-2.5 border border-red-500/30 text-red-400 rounded-xl text-sm font-medium hover:bg-red-500/10 transition-all"
           onClick={() => {
-            console.log("logout")
+            console.log("logout");
           }}
         >
+          <LogOut size={16} />
           Logout
         </button>
 
         <button
-          className="px-6 py-2 bg-red-500 text-white rounded-md text-sm hover:brightness-95 transition"
+          className="flex items-center gap-2 px-6 py-2.5 bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl text-sm font-medium hover:bg-red-500/20 transition-all"
           onClick={() => {
             if (
               confirm(
@@ -29,13 +34,14 @@ export default function DangerZone() {
               )
             ) {
               // call API to delete
-              console.log("deleted")
+              console.log("deleted");
             }
           }}
         >
+          <Trash2 size={16} />
           Delete Account
         </button>
       </div>
     </div>
-  )
+  );
 }

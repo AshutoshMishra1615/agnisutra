@@ -9,27 +9,50 @@ class UserCreate(BaseModel):
     password: str
 
 
+class ChangePassword(BaseModel):
+    current_password: str
+    new_password: str
+
+
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    city: Optional[str] = None
+    lat: Optional[float] = None
+    lon: Optional[float] = None
+
+
 class UserOut(BaseModel):
     id: int
     name: str
     email: str
     role: str
+    city: Optional[str] = None
+    profile_photo: Optional[str] = None
+    cover_photo: Optional[str] = None
+    is_deleted: int
+    created_at: datetime
 
     class Config:
         from_attributes = True
 
 
-class SensorData(BaseModel):
+class SensorBase(BaseModel):
     moisture: float
     nitrogen: Optional[float] = None
     phosphorus: Optional[float] = None
     potassium: Optional[float] = None
+    temperature: Optional[float] = None
+    humidity: Optional[float] = None
 
 
-class SensorLogOut(SensorData):
+class SensorData(SensorBase):
+    device_id: str
+
+
+class SensorLogOut(SensorBase):
     id: int
     timestamp: datetime
-    farm_id: Optional[int] = None
+    user_id: Optional[int] = None
 
     class Config:
         from_attributes = True
@@ -57,45 +80,28 @@ class TokenData(BaseModel):
 
 class KrishiYieldInput(BaseModel):
     crop: str
-    variety_group: str = "early"
     maturity_days: int = 120
-    base_yield_potential_t_ha: float = 2.5
     mean_temp_gs_C: float
     temp_flowering_C: float
     seasonal_rain_mm: float
     rain_flowering_mm: float
     humidity_mean_pct: float
-    solar_MJ_m2_day: float
-    soil_pH: float
-    soil_oc_pct: float
-    clay_pct: float
+    soil_pH: float =6.5
+    clay_pct: float =30
     soil_N_status_kg_ha: float
     soil_P_status_kg_ha: float
     soil_K_status_kg_ha: float
-    soil_texture: str
-    soil_depth_cm: float
-    season_length_days: int
-    plant_density_plants_m2: float
-    irrigation_events: int
-    herbicide_apps: int
-    insecticide_apps: int
-    fungicide_apps: int
-    weed_pressure_index: float
-    pest_pressure_index: float
-    disease_pressure_index: float
-    ndvi_early: float
-    ndvi_flowering: float
-    ndvi_peak: float
-    ndvi_late: float
-    ndvi_veg_slope: float
-    seed_moisture_pct: float
     fert_N_kg_ha: float
     fert_P_kg_ha: float
     fert_K_kg_ha: float
-    sowing_doy: int
-    # Optional context
-    district_display: Optional[str] = None
-    pincode: Optional[str] = None
+    irrigation_events: int=3
+    ndvi_flowering: float
+    ndvi_peak: float
+    ndvi_veg_slope: float
+    soil_moisture_pct: float
+   
+    
+
 
 
 class KrishiYieldOut(BaseModel):
@@ -103,6 +109,24 @@ class KrishiYieldOut(BaseModel):
     unit: str = "t/ha"
     alerts: list[str] = []
     benchmark_comparison: Optional[str] = None
+
+
+class FertilizerRecommendationInput(BaseModel):
+    crop: str
+    target_yield: float
+    soil_N: float
+    soil_P: float
+    soil_K: float
+    temperature: float
+    ph: float
+    moisture: float
+
+
+class FertilizerRecommendationOutput(BaseModel):
+    recommended_N: float
+    recommended_P: float
+    recommended_K: float
+    unit: str = "kg/ha"
 
 
 class KrishiChatInput(BaseModel):
@@ -114,3 +138,20 @@ class KrishiChatInput(BaseModel):
 
 class KrishiChatOut(BaseModel):
     answer: str
+
+
+class FieldCreate(BaseModel):
+    name: str
+    crop: str
+    area_acres: float
+    lat: float
+    lon: float
+
+
+class FieldOut(FieldCreate):
+    id: int
+    user_id: int
+    created_at: datetime
+
+    class Config:
+        from_attributes = True

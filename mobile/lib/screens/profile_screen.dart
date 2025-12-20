@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
+// import 'package:easy_localization/easy_localization.dart';
+=======
 import 'package:easy_localization/easy_localization.dart';
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
 import 'package:image_picker/image_picker.dart';
 import '../services/auth_service.dart';
 import '../constants.dart';
 import 'login_screen.dart';
+<<<<<<< HEAD
+=======
 import 'register_screen.dart';
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -109,8 +116,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             SnackBar(
               content: Text(
                 isProfilePhoto
+<<<<<<< HEAD
+                    ? 'Profile photo updated'
+                    : 'Cover photo updated',
+=======
                     ? 'profile_photo_updated'.tr()
                     : 'cover_photo_updated'.tr(),
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
               ),
               backgroundColor: Colors.green,
             ),
@@ -119,8 +131,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
+<<<<<<< HEAD
+            const SnackBar(
+              content: Text('Failed to update photo'),
+=======
             SnackBar(
               content: Text('failed_update_photo'.tr()),
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
               backgroundColor: Colors.red,
             ),
           );
@@ -138,6 +155,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
+<<<<<<< HEAD
+        title: const Text(
+          'Delete Account',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: const Text(
+          'Are you sure you want to delete your account? This action cannot be undone.',
+          style: TextStyle(color: Colors.white70),
+=======
         title: Text(
           'delete_account'.tr(),
           style: const TextStyle(color: Colors.white),
@@ -145,10 +171,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
         content: Text(
           'delete_account_confirmation'.tr(),
           style: const TextStyle(color: Colors.white70),
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
+<<<<<<< HEAD
+            child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text(
+              'Delete',
+              style: TextStyle(color: Colors.redAccent),
+=======
             child: Text(
               'cancel'.tr(),
               style: const TextStyle(color: Colors.white),
@@ -159,6 +195,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Text(
               'delete'.tr(),
               style: const TextStyle(color: Colors.redAccent),
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
             ),
           ),
         ],
@@ -282,6 +319,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+<<<<<<< HEAD
+=======
   Widget _buildGuestProfile() {
     return Scaffold(
       backgroundColor: const Color(0xFF1E1E1E),
@@ -404,6 +443,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -415,10 +455,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
     }
 
+<<<<<<< HEAD
+=======
     if (_userProfile == null) {
       return _buildGuestProfile();
     }
 
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
     final name = _userProfile?['name'] ?? 'User';
     final role = _userProfile?['role'] ?? 'Farmer';
     final email = _userProfile?['email'] ?? 'No email';

@@ -4,7 +4,7 @@ Thumbs.db
 .vscode/
 .idea/
 *.log
-
+plant_disease_prediction_model.h5
 # Python
 __pycache__/
 *.py[cod]
@@ -17,6 +17,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+*.h5
 
 # Backend specific
 backend/venv/

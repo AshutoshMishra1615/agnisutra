@@ -30,9 +30,9 @@ class WeatherService {
     try {
       String? token = await _storage.read(key: 'access_token');
 
-      final response = await _dio.post(
+      final response = await _dio.get(
         '${AppConstants.baseUrl}/krishi-saathi/weather',
-        data: {"lat": lat, "lon": lon},
+        queryParameters: {"lat": lat, "lon": lon},
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',

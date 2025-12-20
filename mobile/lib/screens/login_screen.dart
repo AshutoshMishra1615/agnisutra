@@ -1,6 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
+=======
 import 'package:easy_localization/easy_localization.dart';
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
 // import 'package:flutter_svg/flutter_svg.dart';
 import 'home_screen.dart';
 import 'register_screen.dart';
@@ -29,9 +32,15 @@ class _LoginScreenState extends State<LoginScreen> {
         r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
       ),
     )) {
+<<<<<<< HEAD
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid email')),
+      );
+=======
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('enter_valid_email'.tr())));
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
     }
 
     // if (_emailController.text.isEmpty) {
@@ -40,9 +49,15 @@ class _LoginScreenState extends State<LoginScreen> {
     //   ).showSnackBar(const SnackBar(content: Text('Please enter your name')));
     // }
     if (_passwordController.text.isEmpty) {
+<<<<<<< HEAD
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter your password')),
+      );
+=======
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('enter_password'.tr())));
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
     }
 
     bool success = await _authService.login(
@@ -63,7 +78,11 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
+<<<<<<< HEAD
+      ).showSnackBar(const SnackBar(content: Text('Login Failed')));
+=======
       ).showSnackBar(SnackBar(content: Text('login_failed'.tr())));
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
     }
   }
 
@@ -138,10 +157,17 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+<<<<<<< HEAD
+                              const Center(
+                                child: Text(
+                                  'Sign In',
+                                  style: TextStyle(
+=======
                               Center(
                                 child: Text(
                                   'sign_in'.tr(),
                                   style: const TextStyle(
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
                                     color: Colors.white,
                                     fontSize: 28,
                                     fontWeight: FontWeight.bold,
@@ -151,19 +177,33 @@ class _LoginScreenState extends State<LoginScreen> {
                               const SizedBox(height: 30),
 
                               // Email Field
+<<<<<<< HEAD
+                              _buildLabel('Email'),
+                              _buildTextField(
+                                controller: _emailController,
+                                hint: 'Email',
+=======
                               _buildLabel('email'.tr()),
                               _buildTextField(
                                 controller: _emailController,
                                 hint: 'email'.tr(),
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
                                 keyboardType: TextInputType.emailAddress,
                               ),
                               const SizedBox(height: 16),
 
                               // Password Field
+<<<<<<< HEAD
+                              _buildLabel('Password'),
+                              _buildTextField(
+                                controller: _passwordController,
+                                hint: 'Password',
+=======
                               _buildLabel('password'.tr()),
                               _buildTextField(
                                 controller: _passwordController,
                                 hint: 'password'.tr(),
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
                                 obscureText: true,
                               ),
                               const SizedBox(height: 24),
@@ -186,9 +226,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ? const CircularProgressIndicator(
                                           color: Colors.white,
                                         )
+<<<<<<< HEAD
+                                      : const Text(
+                                          'Sign In',
+                                          style: TextStyle(
+=======
                                       : Text(
                                           'sign_in'.tr(),
                                           style: const TextStyle(
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.black87,
@@ -211,6 +257,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                     );
                                   },
                                   child: RichText(
+<<<<<<< HEAD
+                                    text: const TextSpan(
+                                      text: 'New User ? ',
+                                      style: TextStyle(color: Colors.white),
+                                      children: [
+                                        TextSpan(
+                                          text: 'Create Account',
+                                          style: TextStyle(
+=======
                                     text: TextSpan(
                                       text: 'new_user'.tr(),
                                       style: const TextStyle(
@@ -220,6 +275,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         TextSpan(
                                           text: 'create_account'.tr(),
                                           style: const TextStyle(
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
                                             fontWeight: FontWeight.bold,
                                             decoration:
                                                 TextDecoration.underline,
@@ -230,6 +286,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                               ),
+<<<<<<< HEAD
+=======
                               const SizedBox(height: 24),
                               Center(
                                 child: TextButton(
@@ -250,6 +308,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                               ),
+>>>>>>> eb9d84b43aa988147346dc664959429ed6a207b3
                             ],
                           ),
                         ),

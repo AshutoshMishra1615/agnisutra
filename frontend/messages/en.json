@@ -18,19 +18,29 @@
       "health": "Real-time crop health insights"
     }
   },
-  "login" : {
-    "title":"Enter Account",
-    "email" : "email",
-    "pass" : "Password",
-    "login" : "Log In"
+  "login": {
+    "title": "Enter Account",
+    "email": "email",
+    "pass": "Password",
+    "login": "Log In"
   },
   "dashboard": {
     "title": "Hello",
+    "welcome": "Welcome back",
+    "simulation": {
+      "active": "Simulation Active",
+      "start": "Simulate Alerts",
+      "alert": {
+        "title": "Critical Alert: Pest Outbreak Detected",
+        "desc": "High probability of Fall Armyworm in Sector 4. Immediate action recommended."
+      }
+    },
     "actions": {
       "ai": "AI Assistant",
       "my": "My Fields",
       "add": "Add fields",
-      "soil": "Soil Reports"
+      "soil": "Soil Reports",
+      "disease": "Disease Detect"
     },
     "crop": "Crop Health",
     "back": "Back to All Crops",
@@ -46,29 +56,133 @@
         "expect": "Expected Yields"
       }
     },
-    "details":{
-      "health":{
-        "crop":"Crop Health",
-        "soil":"Soil Health",
-        "irrigate":"Irrigation Health",
-        "analyse":"Analysis Scale"
+    "details": {
+      "health": {
+        "crop": "Crop Health",
+        "soil": "Soil Health",
+        "irrigate": "Irrigation Health",
+        "analyse": "Analysis Scale"
       },
-      "rating":{
-        "good":"Good",
-        "medium":"Medium",
-        "bad":"Bad"
+      "rating": {
+        "good": "Good",
+        "medium": "Medium",
+        "bad": "Bad"
       },
-      "management":{
-        "irrigate":"Irrigation Management",
-        "pest":"Pesticide Management",
-        "add" : "ADD",
-        "params":{
-          "date" : "Date",
-          "Rainfall" : "Rainfall (mm)",
-          "evaporation" : "Evaporation",
-          "quantity" : "Quantity"
+      "management": {
+        "irrigate": "Irrigation Management",
+        "pest": "Pesticide Management",
+        "add": "ADD",
+        "params": {
+          "date": "Date",
+          "Rainfall": "Rainfall (mm)",
+          "evaporation": "Evaporation",
+          "quantity": "Quantity"
         }
       }
     }
+  },
+  "sensor": {
+    "title": "Live Field Sensors",
+    "online": "ONLINE",
+    "moisture": "Moisture",
+    "npk": "NPK",
+    "last_updated": "Last updated"
+  },
+  "landing": {
+    "empowering": "Empowering Agriculture",
+    "login": "Login",
+    "getStarted": "Get Started",
+    "heroTitle": "Smart Farming for a Better Future",
+    "heroDesc": "Leverage AI-powered insights for crop yield prediction, disease detection, and real-time monitoring.",
+    "startJourney": "Start Your Journey",
+    "learnMore": "Learn More",
+    "keyFeatures": "Key Features",
+    "featuresDesc": "Everything you need to manage your farm efficiently",
+    "features": {
+      "yield": {
+        "title": "Yield Prediction",
+        "desc": "Advanced ML models to forecast crop yields based on weather and soil data."
+      },
+      "disease": {
+        "title": "Disease Detection",
+        "desc": "Instant identification of crop diseases using computer vision technology."
+      },
+      "monitoring": {
+        "title": "Real-time Monitoring",
+        "desc": "Track soil moisture, temperature, and humidity with IoT integration."
+      },
+      "advisory": {
+        "title": "AI Advisory",
+        "desc": "Get personalized farming advice from our intelligent assistant."
+      }
+    },
+    "tryTools": "Try Our Tools",
+    "tryToolsDesc": "Experience the power of AI right now",
+    "goToDashboard": "Go to Dashboard",
+    "loginRequired": "Login required for full access",
+    "freeTools": "Free AI Tools",
+    "noLogin": "No Login Required",
+    "whyChoose": "Why Choose AgniSutra?",
+    "comprehensive": "Comprehensive solutions for modern agriculture",
+    "satellite": {
+      "title": "Satellite Monitoring",
+      "desc": "Real-time NDVI analysis using satellite imagery."
+    },
+    "chatbot": {
+      "desc": "24/7 Chatbot support for instant farming queries."
+    },
+    "analytics": {
+      "title": "Smart Analytics",
+      "desc": "Data-driven insights to maximize your harvest."
+    },
+    "copyright": "© 2025 AgniSutra. All rights reserved."
+  },
+  "yield": {
+    "title": "Yield Prediction",
+    "defaultLocation": "Using default location (allow location access for better accuracy)",
+    "fetching": "Fetching local data...",
+    "autoFill": "Auto-fill from Location",
+    "selectCrop": "Select Crop",
+    "targetYield": "Target Yield (kg/ha)",
+    "soilN": "Soil Nitrogen (N)",
+    "soilP": "Soil Phosphorus (P)",
+    "soilK": "Soil Potassium (K)",
+    "temp": "Temperature (°C)",
+    "ph": "Soil pH",
+    "moisture": "Soil Moisture (%)",
+    "advanced": "Advanced Parameters",
+    "getRecommendation": "Get Recommendation",
+    "analyzing": "Analyzing soil data...",
+    "recommended": "Recommended Fertilizer",
+    "basedOn": "Based on your soil parameters and target yield",
+    "nitrogen": "Nitrogen",
+    "phosphorus": "Phosphorus",
+    "potassium": "Potassium",
+    "apply": "Apply",
+    "reset": "Reset",
+    "crops": {
+      "soybean": "Soybean",
+      "groundnut": "Groundnut",
+      "rapeseed": "Rapeseed",
+      "sunflower": "Sunflower",
+      "safflower": "Safflower",
+      "sesame": "Sesame",
+      "niger": "Niger",
+      "castor": "Castor",
+      "linseed": "Linseed",
+      "oilpalm": "Oil Palm"
+    }
+  },
+  "disease": {
+    "title": "Disease Detection",
+    "analyzed": "Analyzed",
+    "success": "Analysis complete",
+    "error": "Analysis failed",
+    "upload_title": "Upload Image",
+    "upload_desc": "Drag & drop or click to upload (JPG, PNG)",
+    "analyzing": "Analyzing...",
+    "diagnose_btn": "Diagnose Disease",
+    "treatment_title": "Treatment & Prevention",
+    "analyze_another": "Analyze Another Image"
   }
 }

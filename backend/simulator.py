@@ -16,12 +16,17 @@ def simulate_sensor():
         nitrogen = round(random.uniform(10.0, 100.0), 2)
         phosphorus = round(random.uniform(10.0, 100.0), 2)
         potassium = round(random.uniform(10.0, 100.0), 2)
+        temperature = round(random.uniform(20.0, 40.0), 2)
+        humidity = round(random.uniform(40.0, 95.0), 2)
         
         payload = {
+            "user_id": 1, # Assuming User ID 1 exists
             "moisture": moisture,
             "nitrogen": nitrogen,
             "phosphorus": phosphorus,
-            "potassium": potassium
+            "potassium": potassium,
+            "temperature": temperature,
+            "humidity": humidity
         }
         
         try:
@@ -33,7 +38,8 @@ def simulate_sensor():
         except Exception as e:
             print(f"Error: {e}")
             
-        # Wait for 2 seconds
+        # Wait for 2 seconds (Simulating frequent data updates)
+        # The backend scheduler checks this data every 30 minutes for alerts
         time.sleep(2)
 
 if __name__ == "__main__":

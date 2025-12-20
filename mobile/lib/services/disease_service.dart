@@ -7,7 +7,7 @@ class DiseaseService {
   final Dio _dio = Dio();
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  Future<String?> predictDisease(
+  Future<Map<String, dynamic>?> predictDisease(
     File imageFile,
     String cropName,
     String query,
@@ -31,13 +31,12 @@ class DiseaseService {
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',
-            // 'Content-Type': 'multipart/form-data', // Dio handles this automatically
           },
         ),
       );
 
       if (response.statusCode == 200) {
-        return response.data.toString();
+        return response.data as Map<String, dynamic>;
       }
       return null;
     } catch (e) {

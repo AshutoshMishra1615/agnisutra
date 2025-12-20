@@ -209,7 +209,13 @@ class _HomeCarouselState extends State<HomeCarousel> {
     }
   }
 
-  void _showResultDialog(String result) {
+  void _showResultDialog(Map<String, dynamic> result) {
+    String predictedClass = result['predicted_class'] ?? 'Unknown';
+    String confidence = result['confidence'] != null 
+        ? '${(result['confidence'] * 100).toStringAsFixed(1)}%' 
+        : 'N/A';
+    String advice = result['preventive_measures'] ?? 'No advice available.';
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -219,9 +225,27 @@ class _HomeCarouselState extends State<HomeCarousel> {
           style: const TextStyle(color: Colors.white),
         ),
         content: SingleChildScrollView(
-          child: Text(
-            result,
-            style: const TextStyle(color: Colors.white, fontSize: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '${'Disease'}: $predictedClass', 
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '${'Confidence'}: $confidence', 
+                style: const TextStyle(color: Colors.white70)
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Advice:', 
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)
+              ),
+              const SizedBox(height: 4),
+              Text(advice, style: const TextStyle(color: Colors.white)),
+            ],
           ),
         ),
         actions: [
